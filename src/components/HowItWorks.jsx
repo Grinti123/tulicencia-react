@@ -139,7 +139,7 @@ const HowItWorks = () => {
   }, []);
   
   return (
-    <div className="relative">
+    <div className="relative bg-white py-12 md:py-16">
       <lottie-player
       id="car"
         src="/json/chicacarrito120fps.json"

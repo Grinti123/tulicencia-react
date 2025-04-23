@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsCondition from "./pages/TermsCondition";
+import ExamplePage from "./pages/ExamplePage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-conditions" element={<TermsCondition />} />
+        <Route path="/example" element={<ExamplePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
