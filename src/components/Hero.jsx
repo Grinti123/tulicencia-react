@@ -1,10 +1,6 @@
 import React from 'react';
 import { DotLottiePlayer, LinkButton, FadeIn } from './ui';
 
-/**
- * Hero section component for the homepage
- * Using reusable UI components: DotLottiePlayer, LinkButton, FadeIn
- */
 const Hero = () => {
   return (
     <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
@@ -36,7 +32,7 @@ const Hero = () => {
           <DotLottiePlayer
             src="/json/carro-home.json"
             autoplay={true}
-            loop={true}
+            loop={false}
           />
         </div>
         <div className="relative z-10">

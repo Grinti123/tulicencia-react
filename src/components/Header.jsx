@@ -10,7 +10,7 @@ const Header = () => {
     { to: '/servicios', text: 'Servicios disponibles' },
     { to: '/como-funciona', text: 'Cómo funciona?' },
     { to: '/contactenos', text: 'Contáctenos' },
-    { to: '/registrarse', text: 'Registrarse' },
+    { to: '/Register', text: 'Registrarse' },
   ];
 
   useEffect(() => {
@@ -27,7 +27,8 @@ const Header = () => {
   return (
     <>
       <header 
-        className={`fixed top-0 left-0 right-0 w-full z-50 bg-[#157a3c] transition-all duration-300 backdrop-blur-sm
+        className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 backdrop-blur-sm
+          bg-[#157a3c]
           ${hasScrolled ? 'shadow-md bg-opacity-95' : ''}`}
       >
         <div className="flex justify-between items-center px-4 py-2 md:py-3 md:px-6 max-w-7xl mx-auto">
@@ -49,7 +50,7 @@ const Header = () => {
               </Link>
             ))}
             <Link
-              to="/ingresar"
+              to="/Login"
               className="border border-white text-white hover:bg-white hover:text-[#157a3c] px-5 py-2 rounded-full text-sm font-medium transition-colors"
             >
               Ingresar
@@ -59,7 +60,7 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-white focus:outline-none p-2"
+            className="md:hidden focus:outline-none p-2 text-white"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -109,4 +110,4 @@ const Header = () => {
   );
 };
 
-export default Header; 
+export default Header;
