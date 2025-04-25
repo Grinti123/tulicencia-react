@@ -94,7 +94,7 @@ const Header = () => {
               </Link>
             ))}
             <Link
-              to="/ingresar"
+              to="/Login"
               className="text-white hover:text-gray-200 font-medium py-3 px-2 text-center"
               onClick={() => setIsMobileMenuOpen(false)}
             >

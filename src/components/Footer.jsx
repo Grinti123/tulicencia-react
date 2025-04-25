@@ -90,13 +90,13 @@ const Footer = () => {
             <h4 className="text-green-700 font-medium mb-4">POLÍTICAS</h4>
             <nav className="flex flex-col gap-2">
               <Link
-                to="/politica-privacidad"
+                to="/privacy-policy"
                 className="text-gray-600 hover:text-green-600 text-sm"
               >
                 Política de Privacidad
               </Link>
               <Link
-                to="/terminos-condiciones"
+                to="/terms-conditions"
                 className="text-gray-600 hover:text-green-600 text-sm"
               >
                 Términos y Condiciones

@@ -29,11 +29,11 @@ const Login = () => {
   return (
     <div className="min-h-screen">
       <HeaderRegister />
-      <main className="py-20 mt-1 rounded-t-[3rem]">
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+      <main className="py-10 sm:py-16 md:py-20 mt-1 rounded-t-[3rem] px-4 sm:px-6 md:px-8">
+        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6 sm:gap-8 items-center">
           {/* Left side - Animation and Text */}
           <FadeIn className="order-2 md:order-1" duration="1s">
-            <div className="h-[300px] mb-6">
+            <div className="h-[200px] sm:h-[250px] md:h-[300px] mb-4 sm:mb-6">
               <DotLottiePlayer
                 src="/json/capitolio2.json"
                 autoplay={true}
@@ -41,8 +41,8 @@ const Login = () => {
               />
             </div>
             <div className="text-center">
-              <h1 className="text-5xl font-bold text-[#1a602d] mb-4">¡Bienvenido!</h1>
-              <p className="text-lg text-[#224a33]">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1a602d] mb-3 sm:mb-4">¡Bienvenido!</h1>
+              <p className="text-base sm:text-lg text-[#224a33]">
                 Inicia sesión para continuar con tus trámites.
               </p>
             </div>
@@ -50,9 +50,9 @@ const Login = () => {
 
           {/* Right side - Form */}
           <FadeIn className="order-1 md:order-2" duration="1s">
-            <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg bg-gradient-to-b from-[#e8f8ee] to-[#ffffff]">
-              <div className="mb-6">
-                <label htmlFor="username" className="block text-[#1a602d] font-medium mb-2">
+            <form onSubmit={handleSubmit} className="bg-white p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] bg-gradient-to-b from-[#e8f8ee] to-[#ffffff]">
+              <div className="mb-4 sm:mb-6">
+                <label htmlFor="username" className="block text-[#1a602d] font-medium mb-1.5 sm:mb-2">
                   Usuario o correo <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -62,13 +62,13 @@ const Login = () => {
                   value={formData.username}
                   onChange={handleChange}
                   placeholder="Ingrese su usuario"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#157a3c]"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#157a3c] bg-white shadow-md text-sm sm:text-base"
                   required
                 />
               </div>
 
-              <div className="mb-6">
-                <label htmlFor="password" className="block text-[#1a602d] font-medium mb-2">
+              <div className="mb-4 sm:mb-6">
+                <label htmlFor="password" className="block text-[#1a602d] font-medium mb-1.5 sm:mb-2">
                   Contraseña <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -79,7 +79,7 @@ const Login = () => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Ingrese su contraseña"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#157a3c]"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#157a3c] bg-white shadow-md text-sm sm:text-base"
                     required
                   />
                   <button
@@ -101,22 +101,22 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="mb-6 text-right">
-                <Link to="/forgot-password" className="text-[#1a602d] hover:text-[#157a3c] text-sm">
+              <div className="mb-4 sm:mb-6 text-right">
+                <Link to="/forgot-password" className="text-[#1a602d] hover:text-[#157a3c] text-xs sm:text-sm">
                   ¿Olvidaste tu contraseña y/o usuario?
                 </Link>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-[#1a602d] text-white py-3 px-4 rounded-lg hover:bg-[#157a3c] transition duration-200"
+                className="w-full bg-[#1a602d] text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg hover:bg-[#157a3c] transition duration-200 cursor-pointer text-sm sm:text-base"
               >
                 Iniciar sesión
               </button>
 
-              <div className="mt-6 text-center">
-                <span className="text-[#224a33]">¿No tienes cuenta aún? </span>
-                <Link to="/register" className="text-[#1a602d] hover:text-[#157a3c] font-medium">
+              <div className="mt-4 sm:mt-6 text-center">
+                <span className="text-[#224a33] text-sm sm:text-base">¿No tienes cuenta aún? </span>
+                <Link to="/register" className="text-[#1a602d] hover:text-[#157a3c] font-medium text-sm sm:text-base">
                   Crear ahora
                 </Link>
               </div>
@@ -124,6 +124,7 @@ const Login = () => {
           </FadeIn>
         </div>
       </main>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 135" fill="none"><path fill="#EFF1FE" d="M1440 135V57.8C798.3 193.6 358.2-153.2 0 87.6V135h1440Z"></path></svg>
       <Footer />
     </div>
   );

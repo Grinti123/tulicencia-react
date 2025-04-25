@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 /**
  * Reusable DotLottiePlayer component
@@ -21,34 +21,55 @@ const DotLottiePlayer = ({
   className = '',
   style = {}
 }) => {
+  const playerRef = useRef(null);
+  const scriptLoadedRef = useRef(false);
+
   useEffect(() => {
     // Initialize dotLottie player when component mounts
     const loadDotLottie = async () => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && !scriptLoadedRef.current) {
         // Check if dotLottie script is already loaded
         if (!document.querySelector('script[src*="dotlottie-player"]')) {
           const script = document.createElement('script');
-          script.src = 'https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.js';
+          script.src = 'https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js';
           script.async = true;
-          document.body.appendChild(script);
+          await new Promise((resolve) => {
+            script.onload = resolve;
+            document.body.appendChild(script);
+          });
         }
+        scriptLoadedRef.current = true;
       }
     };
 
     loadDotLottie();
+
+    return () => {
+      // Cleanup: Stop animation when component unmounts
+      if (playerRef.current) {
+        playerRef.current.stop();
+      }
+    };
   }, []);
 
+  // Handle player ready and store reference
+  const handlePlayerLoad = (e) => {
+    playerRef.current = e.target;
+  };
+
   return (
-    <dotlottie-player
+    <lottie-player
+      ref={playerRef}
       src={src}
       background={background}
       speed={speed}
-      loop={loop ? '' : null}
-      autoplay={autoplay ? '' : null}
+      loop={loop}
+      autoplay={true}
       style={{ width: '100%', height: '100%', ...style }}
       className={className}
+      onLoad={handlePlayerLoad}
     />
   );
 };
 
-export default DotLottiePlayer; 
+export default DotLottiePlayer;

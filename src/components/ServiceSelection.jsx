@@ -146,7 +146,7 @@ const ServiceSelection = () => {
               </p>
 
               <LinkButton
-                to="/iniciar-tramite-vehiculo"
+                to="/Login"
                 variant="primary"
                 size="md"
               >
