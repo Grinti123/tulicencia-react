@@ -24,6 +24,27 @@ For shared application components (Header, Footer, etc.), import using:
 import { Header, Footer } from '../../components';
 ```
 
+### Index Files Structure
+
+The application uses a structured index file system for easier imports:
+
+- `/src/components/index.js` - Exports all shared components and re-exports from subdirectories
+- `/src/components/ui/index.js` - Exports all UI components 
+- `/src/components/dashboard/index.js` - Exports all dashboard components
+- `/src/components/procedures/index.js` - Exports all procedure components
+
+This structure allows for clean imports and helps maintain consistency. For example:
+
+```jsx
+// Import from multiple component categories
+import { Button, InputForm } from '../../components/ui';
+import { Header, Footer } from '../../components';
+import { NewProcedure } from '../../components/dashboard';
+
+// Or import everything from the main components index
+import { Button, InputForm, Header, Footer, NewProcedure } from '../../components';
+```
+
 ### Form Fields
 
 Always use the `InputForm` component for form fields instead of basic HTML inputs:
