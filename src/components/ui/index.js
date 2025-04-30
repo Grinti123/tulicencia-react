@@ -9,3 +9,4 @@ export { default as LinkButton } from './LinkButton';
 export { default as RadioGroup } from './RadioGroup';
 export { default as Section } from './Section';
 export { default as Tabs } from './Tabs'; 
+export { default as InputForm } from './InputForm';

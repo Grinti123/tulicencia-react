@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import HeaderRegister from '../components/HeaderRegister';
 import { DotLottiePlayer, FadeIn } from '../components/ui';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 const Login = () => {
@@ -20,10 +20,31 @@ const Login = () => {
     }));
   };
 
+  const navigate = useNavigate();
+
+  // Mock user credentials
+  const mockUser = {
+    username: 'user@example.com',
+    password: 'password123'
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add login logic here
+    
+    // Mock authentication
+    if (formData.username === mockUser.username && formData.password === mockUser.password) {
+      // Store user data in localStorage
+      localStorage.setItem('user', JSON.stringify({
+        email: mockUser.username,
+        name: 'Juan Pablo', // Mock user name
+        isAuthenticated: true
+      }));
+      
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } else {
+      alert('Invalid credentials. Please use:\nUsername: user@example.com\nPassword: password123');
+    }
   };
 
   return (
@@ -32,7 +53,7 @@ const Login = () => {
       <main className="py-10 sm:py-16 md:py-20 mt-1 rounded-t-[3rem] px-4 sm:px-6 md:px-8">
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6 sm:gap-8 items-center">
           {/* Left side - Animation and Text */}
-          <FadeIn className="order-2 md:order-1" duration="1s">
+          <FadeIn className="order-1 md:order-2" duration="1s">
             <div className="h-[200px] sm:h-[250px] md:h-[300px] mb-4 sm:mb-6">
               <DotLottiePlayer
                 src="/json/capitolio2.json"
@@ -124,7 +145,15 @@ const Login = () => {
           </FadeIn>
         </div>
       </main>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 135" fill="none"><path fill="#EFF1FE" d="M1440 135V57.8C798.3 193.6 358.2-153.2 0 87.6V135h1440Z"></path></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 135" fill="none">
+        <defs>
+          <linearGradient id="wave-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#e8f8ee" />
+            <stop offset="100%" stopColor="#ffffff" />
+          </linearGradient>
+        </defs>
+        <path fill="url(#wave-gradient)" d="M1440 135V57.8C798.3 193.6 358.2-153.2 0 87.6V135h1440Z"></path>
+      </svg>
       <Footer />
     </div>
   );

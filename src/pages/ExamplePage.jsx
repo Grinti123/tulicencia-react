@@ -7,10 +7,11 @@ import {
   DotLottiePlayer,
   FadeIn,
   Icon,
+  InputForm,
   LinkButton,
   RadioGroup,
   Section,
-  Tabs
+  Tabs,
 } from '../components/ui';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -165,6 +166,17 @@ const ExamplePage = () => {
             </FadeIn>
           </div>
         </Section>
+
+        <InputForm
+           id="licenseNumber"
+           name="licenseNumber"
+           label="Número de licencia"
+           value={formData.licenseNumber}
+           onChange={handleChange}
+           placeholder="Ingrese su número de licencia"
+           maxLength={7}
+           required
+        />
         
         {/* Tabs Section */}
         <Section bg="light" containerSize="lg">
