@@ -1,28 +1,29 @@
-import React, { useState } from 'react';
-import { Button, Card, Container, DotLottiePlayer, LinkButton, RadioGroup, FadeIn } from './ui';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Button, Card, Container, DotLottiePlayer, RadioGroup, FadeIn, LinkButton } from './ui';
+import useProcedures from '../hooks/useProcedures';
 
 /**
  * Service Selection component with interactive selection options
- * Uses reusable UI components
+ * Uses reusable UI components and fetches procedures
  */
 const ServiceSelection = () => {
   const [activeService, setActiveService] = useState(null);
   const [selectedPersonalOption, setSelectedPersonalOption] = useState('');
   const [selectedVehicleOption, setSelectedVehicleOption] = useState('');
+  
+  // Use the custom hook to fetch procedures
+  const { isLoading, error, groupProceduresByType } = useProcedures();
+  const { licenseOptions, vehicleOptions } = groupProceduresByType();
 
-  const personalOptions = [
-    { value: 'renovacion', label: 'Renovación de Licencia' },
-    { value: 'duplicado', label: 'Duplicado de Licencia' },
-    { value: 'reciprocidad', label: 'Licencia de Reciprocidad' },
-  ];
+  // Get path based on selected value
+  const getPersonalProcedurePath = () => {
+    return selectedPersonalOption ? `/procedures/license/${selectedPersonalOption}` : '/procedures';
+  };
 
-  const vehicleOptions = [
-    { value: 'traspaso', label: 'Traspaso de Vehículos' },
-    { value: 'gestion-titulo', label: 'Gestión de Título' },
-    { value: 'tablillas', label: 'Tablillas Especiales' },
-    { value: 'gravamenes', label: 'Gravámenes' },
-    { value: 'record', label: 'Record Choferil' },
-  ];
+  const getVehicleProcedurePath = () => {
+    return selectedVehicleOption ? `/procedures/vehicle/${selectedVehicleOption}` : '/procedures';
+  };
 
   return (
     <Container>
@@ -95,27 +96,37 @@ const ServiceSelection = () => {
                 Trámites de personas
               </h3>
               <p className="text-gray-600 text-sm md:text-base mb-4 md:mb-6">
-                Gestionamos tus trámites desde la solicitud hasta la entrega de placas.
+                Gestionamos tus trámites desde la solicitud hasta la entrega de documentos.
               </p>
 
               <LinkButton
-                to="/iniciar-tramite"
+                to={getPersonalProcedurePath()}
                 variant="primary"
                 size="md"
+                disabled={!selectedPersonalOption}
               >
                 ¡Iniciar ahora!
               </LinkButton>
             </Card>
 
-            {/* Form Options Column */}
+            {/* RadioGroup Options Column */}
             <Card variant="secondary" className="rounded-3xl p-4 md:p-8 relative overflow-hidden">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Servicios de Licencia</h3>
               <Card variant="default" shadow={true} className="p-4 md:p-6">
-                <RadioGroup
-                  options={personalOptions}
-                  name="tramite-persona"
-                  value={selectedPersonalOption}
-                  onChange={setSelectedPersonalOption}
-                />
+                {isLoading ? (
+                  <div className="flex justify-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-700"></div>
+                  </div>
+                ) : error ? (
+                  <div className="text-red-500 p-2">{error}</div>
+                ) : (
+                  <RadioGroup
+                    options={licenseOptions}
+                    name="tramite-persona"
+                    value={selectedPersonalOption}
+                    onChange={setSelectedPersonalOption}
+                  />
+                )}
               </Card>
             </Card>
           </div>
@@ -146,23 +157,33 @@ const ServiceSelection = () => {
               </p>
 
               <LinkButton
-                to="/Login"
+                to={getVehicleProcedurePath()}
                 variant="primary"
                 size="md"
+                disabled={!selectedVehicleOption}
               >
                 ¡Iniciar ahora!
               </LinkButton>
             </Card>
 
-            {/* Form Options Column */}
+            {/* RadioGroup Options Column */}
             <Card variant="secondary" className="rounded-3xl p-4 md:p-8 relative overflow-hidden">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Servicios de Vehículos</h3>
               <Card variant="default" shadow={true} className="p-4 md:p-6">
-                <RadioGroup
-                  options={vehicleOptions}
-                  name="tramite-vehiculo"
-                  value={selectedVehicleOption}
-                  onChange={setSelectedVehicleOption}
-                />
+                {isLoading ? (
+                  <div className="flex justify-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-700"></div>
+                  </div>
+                ) : error ? (
+                  <div className="text-red-500 p-2">{error}</div>
+                ) : (
+                  <RadioGroup
+                    options={vehicleOptions}
+                    name="tramite-vehiculo"
+                    value={selectedVehicleOption}
+                    onChange={setSelectedVehicleOption}
+                  />
+                )}
               </Card>
             </Card>
           </div>

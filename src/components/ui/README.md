@@ -45,6 +45,17 @@ import { NewProcedure } from '../../components/dashboard';
 import { Button, InputForm, Header, Footer, NewProcedure } from '../../components';
 ```
 
+### Component Usage Across Application Sections
+
+UI components should be used consistently across all parts of the application:
+
+1. **Procedure Pages** - Use InputForm for all form fields, Button for navigation, etc.
+2. **Dashboard Components** - Use the same UI components in dashboard sections like Profile, UpdatePassword, etc.
+3. **Authentication Pages** - Maintain the same UI component usage in login, registration, and password reset forms
+4. **Public Pages** - Use consistent components in landing pages and informational sections
+
+This ensures a seamless user experience and simplifies maintenance. For example, all form inputs throughout the application (whether in procedure pages, dashboard profile settings, or registration forms) should use the InputForm component instead of basic HTML inputs.
+
 ### Form Fields
 
 Always use the `InputForm` component for form fields instead of basic HTML inputs:

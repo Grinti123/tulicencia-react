@@ -33,7 +33,7 @@ const RadioGroup = ({
           <input
             type="radio"
             name={name}
-            className="form-radio h-4 w-4 md:h-5 md:w-5 text-indigo-600"
+            className="form-radio h-4 w-4 md:h-5 md:w-5 text-[#157a3c] focus:ring-[#157a3c] focus:ring-offset-0 border-gray-300"
             value={option.value}
             checked={value === option.value}
             onChange={handleChange}

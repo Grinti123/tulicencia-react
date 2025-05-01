@@ -1,125 +1,119 @@
 import React, { useState } from 'react';
-import { Button, DotLottiePlayer } from '../../components/ui';
+import { Button, DotLottiePlayer, RadioGroup } from '../../components/ui';
+import { useNavigate } from 'react-router-dom';
+import useProcedures from '../../hooks/useProcedures';
 
 const NewProcedure = () => {
   const [selectedProcedure, setSelectedProcedure] = useState('');
+  const navigate = useNavigate();
+  const { isLoading, error, groupProceduresByType, fetchProcedures } = useProcedures();
+  const { licenseOptions, vehicleOptions } = groupProceduresByType();
+
+  const handleStartProcedure = () => {
+    if (!selectedProcedure) return;
+    
+    // Define routes for each procedure based on the tr_id
+    const procedureRoutes = {
+      1: '/procedures/license-renewal',
+      2: '/procedures/duplicate-license',
+      3: '/procedures/reciprocity-license',
+      4: '/procedures/vehicle-transfer',
+      5: '/procedures/title-management',
+      6: '/procedures/tablillas-incapacidad',
+      7: '/procedures/liens',
+      8: '/procedures/drivers-record'
+    };
+    
+    // Navigate to the appropriate route
+    navigate(procedureRoutes[selectedProcedure]);
+  };
+
+  const handleBrowseAllProcedures = () => {
+    navigate('/procedures');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 bg-gradient-to-br from-[#e8f8ee] via-white to-[#e8f8ee] rounded-lg shadow-sm">
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#157a3c]"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 bg-gradient-to-br from-[#e8f8ee] via-white to-[#e8f8ee] rounded-lg shadow-sm">
+        <div className="text-center text-red-600">
+          <p>{error}</p>
+          <Button
+            variant="secondary"
+            className="mt-4"
+            onClick={fetchProcedures}
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-gradient-to-br from-[#e8f8ee] via-white to-[#e8f8ee] rounded-lg shadow-sm">
-      <h2 className="text-2xl font-semibold text-[#157a3c] mb-6">You can select any of the following procedures</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold text-[#157a3c]">Select a procedure</h2>
+        <Button 
+          variant="secondary"
+          onClick={handleBrowseAllProcedures}
+        >
+          Browse All Procedures
+        </Button>
+      </div>
       <div className="grid md:grid-cols-2 gap-6">
         {/* License Procedures */}
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="flex items-center mb-4">
-          <DotLottiePlayer
-            src="/json/chicolentes.json"
-            autoplay={true}
-            loop={false}
-          />
+          <div className="flex items-center justify-center mb-4">
+            <DotLottiePlayer
+              src="/json/chicolentes.json"
+              autoplay={true}
+              loop={true}
+              style={{width: '170px'}}
+            />
           </div>
-          <div className="space-y-3">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="license-renewal"
-                name="procedure"
-                value="license-renewal"
-                className="w-4 h-4 text-[#157a3c] border-gray-300 focus:ring-[#157a3c]"
-                onChange={(e) => setSelectedProcedure(e.target.value)}
-              />
-              <label htmlFor="license-renewal" className="ml-2 text-gray-700">License Renewal</label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="duplicate-license"
-                name="procedure"
-                value="duplicate-license"
-                className="w-4 h-4 text-[#157a3c] border-gray-300 focus:ring-[#157a3c]"
-                onChange={(e) => setSelectedProcedure(e.target.value)}
-              />
-              <label htmlFor="duplicate-license" className="ml-2 text-gray-700">Duplicate License</label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="reciprocity-license"
-                name="procedure"
-                value="reciprocity-license"
-                className="w-4 h-4 text-[#157a3c] border-gray-300 focus:ring-[#157a3c]"
-                onChange={(e) => setSelectedProcedure(e.target.value)}
-              />
-              <label htmlFor="reciprocity-license" className="ml-2 text-gray-700">Reciprocity License</label>
-            </div>
-          </div>
+          <h3 className="font-medium text-gray-800 mb-3">License Procedures</h3>
+          {licenseOptions.length > 0 ? (
+            <RadioGroup
+              options={licenseOptions}
+              name="license-procedures"
+              value={selectedProcedure}
+              onChange={setSelectedProcedure}
+            />
+          ) : (
+            <p className="text-gray-500 text-sm">No license procedures available</p>
+          )}
         </div>
 
         {/* Vehicle Procedures */}
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <div className="flex items-center mb-4">
-          <DotLottiePlayer
-            src="/json/carrito.json"
-            autoplay={true}
-            loop={false}
-          />
+            <DotLottiePlayer
+              src="/json/carrito.json"
+              autoplay={true}
+              loop={true}
+            />
           </div>
-          <div className="space-y-3">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="vehicle-transfer"
-                name="procedure"
-                value="vehicle-transfer"
-                className="w-4 h-4 text-[#157a3c] border-gray-300 focus:ring-[#157a3c]"
-                onChange={(e) => setSelectedProcedure(e.target.value)}
-              />
-              <label htmlFor="vehicle-transfer" className="ml-2 text-gray-700">Vehicle Transfer</label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="title-management"
-                name="procedure"
-                value="title-management"
-                className="w-4 h-4 text-[#157a3c] border-gray-300 focus:ring-[#157a3c]"
-                onChange={(e) => setSelectedProcedure(e.target.value)}
-              />
-              <label htmlFor="title-management" className="ml-2 text-gray-700">Title Management</label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="tablillas-incapacidad"
-                name="procedure"
-                value="tablillas-incapacidad"
-                className="w-4 h-4 text-[#157a3c] border-gray-300 focus:ring-[#157a3c]"
-                onChange={(e) => setSelectedProcedure(e.target.value)}
-              />
-              <label htmlFor="tablillas-incapacidad" className="ml-2 text-gray-700">Tablillas Incapacidad</label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="liens"
-                name="procedure"
-                value="liens"
-                className="w-4 h-4 text-[#157a3c] border-gray-300 focus:ring-[#157a3c]"
-                onChange={(e) => setSelectedProcedure(e.target.value)}
-              />
-              <label htmlFor="liens" className="ml-2 text-gray-700">Liens</label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="drivers-record"
-                name="procedure"
-                value="drivers-record"
-                className="w-4 h-4 text-[#157a3c] border-gray-300 focus:ring-[#157a3c]"
-                onChange={(e) => setSelectedProcedure(e.target.value)}
-              />
-              <label htmlFor="drivers-record" className="ml-2 text-gray-700">Driver's Record</label>
-            </div>
-          </div>
+          <h3 className="font-medium text-gray-800 mb-3">Vehicle Procedures</h3>
+          {vehicleOptions.length > 0 ? (
+            <RadioGroup
+              options={vehicleOptions}
+              name="vehicle-procedures"
+              value={selectedProcedure}
+              onChange={setSelectedProcedure}
+            />
+          ) : (
+            <p className="text-gray-500 text-sm">No vehicle procedures available</p>
+          )}
         </div>
       </div>
 
@@ -127,6 +121,7 @@ const NewProcedure = () => {
         variant="primary"
         className="mt-6 mx-auto block"
         disabled={!selectedProcedure}
+        onClick={handleStartProcedure}
       >
         Start procedure
       </Button>

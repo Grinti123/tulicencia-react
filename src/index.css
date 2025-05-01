@@ -44,3 +44,26 @@
 .swiper-pagination-bullet-active {
   background: #147A31 !important;
 }
+
+/* Custom radio button styles */
+.form-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid #bfbfbf;
+  border-radius: 50%;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-radio:checked {
+  border-color: #157a3c;
+  background-color: #157a3c;
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='4'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.form-radio:focus {
+  box-shadow: 0 0 0 2px rgba(21, 122, 60, 0.3);
+}
