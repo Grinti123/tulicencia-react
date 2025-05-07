@@ -140,17 +140,19 @@ const HowItWorks = () => {
   
   return (
     <div className="relative bg-white py-12 md:py-16">
-      <lottie-player
-      id="car"
-        src="/json/chicacarrito120fps.json"
-        background="transparent"
-        style={{marginTop: '-100px'}}
-        renderer="svg"
-        speed="1"
-        mode="normal"
-        direction="1"
-        className="w-[200%] h-[200%] md:w-full md:h-full"
-        ></lottie-player>
+      <div className="overflow-x-hidden relative">
+        <lottie-player
+        id="car"
+          src="/json/chicacarrito120fps.json"
+          background="transparent"
+          style={{width: 'full', height: 'full', marginTop: '-100px', position: 'relative', left: '50%', transform: 'translateX(-50%)'}}
+          renderer="svg"
+          speed="1"
+          mode="normal"
+          direction="1"
+          className="w-[200%] h-[200%] max-w-none"
+          ></lottie-player>
+      </div>
 
       {/* Mobile Version */}
       <div className="bg-[#E9F2E7] h-[40rem] lg:h-[0px]">

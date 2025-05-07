@@ -149,8 +149,8 @@ const RegistrationForm = ({ onSubmit }) => {
           setError('Error: Towns data format is unexpected');
           setTowns([]);
         } else {
-          setTowns(townsData);
-          setError(null);
+        setTowns(townsData);
+        setError(null);
         }
       } catch (err) {
         setError('Error loading towns');
@@ -208,16 +208,16 @@ const RegistrationForm = ({ onSubmit }) => {
     const townId = e.target.value;
     console.log('Town change handler called with ID:', townId);
     
-    // Set the pueblo value regardless of whether we find the town or not
-    setFieldValue('pueblo', townId);
+    // Set the pueblo value and trigger validation immediately
+    setFieldValue('pueblo', townId, true);
     
     // Also store the town name for API if we can find it
     if (townId) {
-      const selectedTown = towns.find(town => town.pl_id.toString() === townId.toString());
+    const selectedTown = towns.find(town => town.pl_id.toString() === townId.toString());
       console.log('Selected town:', selectedTown);
       
-      if (selectedTown) {
-        setFieldValue('puebloName', selectedTown.pl_nombre);
+    if (selectedTown) {
+      setFieldValue('puebloName', selectedTown.pl_nombre);
         console.log('Town values set:', townId, selectedTown.pl_nombre);
       } else {
         console.warn('Could not find town with ID:', townId);
@@ -381,7 +381,7 @@ const RegistrationForm = ({ onSubmit }) => {
   );
 
   // Step 2: License Information Form
-  const renderStep2 = ({ errors, touched, values, setFieldValue, handleNumericInput }) => (
+  const renderStep2 = ({ errors, touched, values, setFieldValue, handleNumericInput, setFieldTouched }) => (
     <FadeIn>
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-[#1a602d] mb-4">Información de Identificación</h2>
@@ -427,9 +427,19 @@ const RegistrationForm = ({ onSubmit }) => {
               onChange={(e) => {
                 console.log('Town selection changed:', e.target.value);
                 handleTownChange(e, setFieldValue);
+                // Manually touch the field to trigger validation
+                setFieldValue('pueblo', e.target.value, true);
+                // Mark the field as touched
+                setFieldTouched('pueblo', true, true);
               }}
               disabled={loading}
               error={touched.pueblo && errors.pueblo || error}
+              validate={() => {
+                // This helps ensure validation is run when the field changes
+                if (!values.pueblo && touched.pueblo) {
+                  return 'Please select your town';
+                }
+              }}
             />
             {towns.length === 0 && !loading && <p className="text-sm text-red-500 mt-1">No se pudieron cargar los pueblos. Por favor, recargue la página.</p>}
           </div>
@@ -766,6 +776,7 @@ const RegistrationForm = ({ onSubmit }) => {
             onSubmit={handleFormSubmit}
             validateOnChange={true}
             validateOnBlur={true}
+            validateOnMount={false}
           >
             {(formikProps) => {
               // Create a custom onChange handler for alphabetic fields
@@ -801,9 +812,9 @@ const RegistrationForm = ({ onSubmit }) => {
               };
               
               return (
-                <Form>
+              <Form>
                   {renderStepContent(enhancedFormikProps)}
-                </Form>
+              </Form>
               );
             }}
           </Formik>

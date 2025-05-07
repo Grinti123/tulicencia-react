@@ -8,12 +8,12 @@
 @layer base {
   html {
     font-family: 'Poppins', sans-serif;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
   }
-}
-
-@layer base {
+  
   body {
     @apply text-gray-800;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
   }
 }
 
