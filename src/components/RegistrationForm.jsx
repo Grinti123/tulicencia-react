@@ -248,25 +248,42 @@ const RegistrationForm = ({ onSubmit }) => {
 
   // Input normalizers for specific field types
   const normalizeAlphabeticOnly = (value, setFieldValue, fieldName) => {
-    if (!value) return '';
-    // Remove the replace operation and just set the value directly
-    // This will allow Yup validation to handle the validation instead
-    setFieldValue(fieldName, value);
-    return value;
+    // Special handling for empty string or backspace/delete to last character
+    if (value === '') {
+      setFieldValue(fieldName, '');
+      return '';
+    }
+    
+    // Only allow alphabetic characters and spaces
+    const alphabeticValue = value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, '');
+    setFieldValue(fieldName, alphabeticValue);
+    return alphabeticValue;
   };
 
   const normalizeNumericOnly = (value, setFieldValue, fieldName) => {
-    if (!value) return '';
-    // Simply set the value and let Yup validation handle it
-    setFieldValue(fieldName, value);
-    return value;
+    // Special handling for empty string or backspace/delete to last character
+    if (value === '') {
+      setFieldValue(fieldName, '');
+      return '';
+    }
+    
+    // Only allow numeric characters
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setFieldValue(fieldName, numericValue);
+    return numericValue;
   };
 
   const normalizeUsernameInput = (value, setFieldValue, fieldName) => {
-    if (!value) return '';
-    // Simply set the value and let Yup validation handle it
-    setFieldValue(fieldName, value);
-    return value;
+    // Special handling for empty string or backspace/delete to last character
+    if (value === '') {
+      setFieldValue(fieldName, '');
+      return '';
+    }
+    
+    // Only allow alphanumeric characters and underscores
+    const validValue = value.replace(/[^a-zA-Z0-9_]/g, '');
+    setFieldValue(fieldName, validValue);
+    return validValue;
   };
 
   // Progress indicator for the multi-step form
@@ -297,7 +314,7 @@ const RegistrationForm = ({ onSubmit }) => {
   };
 
   // Step 1: Personal Information Form
-  const renderStep1 = ({ errors, touched, values, setFieldValue }) => (
+  const renderStep1 = ({ errors, touched, values, setFieldValue, handleChange, handleAlphabeticInput }) => (
     <FadeIn>
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-[#1a602d] mb-4">Información Personal</h2>
@@ -311,6 +328,7 @@ const RegistrationForm = ({ onSubmit }) => {
               name="firstName"
               placeholder="Ingrese su nombre"
               error={touched.firstName && errors.firstName}
+              onChange={(e) => handleAlphabeticInput(e, 'firstName')}
             />
           </div>
           
@@ -321,6 +339,8 @@ const RegistrationForm = ({ onSubmit }) => {
               type="text"
               name="middleName"
               placeholder="Opcional"
+              error={touched.middleName && errors.middleName}
+              onChange={(e) => handleAlphabeticInput(e, 'middleName')}
             />
           </div>
         </div>
@@ -334,6 +354,7 @@ const RegistrationForm = ({ onSubmit }) => {
               name="paternalLastName"
               placeholder="Ingrese su apellido paterno"
               error={touched.paternalLastName && errors.paternalLastName}
+              onChange={(e) => handleAlphabeticInput(e, 'paternalLastName')}
             />
           </div>
           
@@ -345,6 +366,7 @@ const RegistrationForm = ({ onSubmit }) => {
               name="maternalLastName"
               placeholder="Ingrese su apellido materno"
               error={touched.maternalLastName && errors.maternalLastName}
+              onChange={(e) => handleAlphabeticInput(e, 'maternalLastName')}
             />
           </div>
         </div>
@@ -359,7 +381,7 @@ const RegistrationForm = ({ onSubmit }) => {
   );
 
   // Step 2: License Information Form
-  const renderStep2 = ({ errors, touched, values, setFieldValue }) => (
+  const renderStep2 = ({ errors, touched, values, setFieldValue, handleNumericInput }) => (
     <FadeIn>
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-[#1a602d] mb-4">Información de Identificación</h2>
@@ -373,6 +395,7 @@ const RegistrationForm = ({ onSubmit }) => {
             placeholder="Ingrese su número de licencia"
             maxLength={7}
             error={touched.licenseNumber && errors.licenseNumber}
+            onChange={(e) => handleNumericInput(e, 'licenseNumber')}
           />
         </div>
         
@@ -385,6 +408,7 @@ const RegistrationForm = ({ onSubmit }) => {
             placeholder="Ingrese últimos 4 dígitos del SSN"
             maxLength={4}
             error={touched.ssn && errors.ssn}
+            onChange={(e) => handleNumericInput(e, 'ssn')}
           />
         </div>
         
@@ -419,6 +443,7 @@ const RegistrationForm = ({ onSubmit }) => {
               placeholder="00000"
               maxLength={5}
               error={touched.zipCode && errors.zipCode}
+              onChange={(e) => handleNumericInput(e, 'zipCode')}
             />
           </div>
         </div>
@@ -436,7 +461,7 @@ const RegistrationForm = ({ onSubmit }) => {
   );
 
   // Step 3: Contact Information Form
-  const renderStep3 = ({ errors, touched, values, setFieldValue }) => (
+  const renderStep3 = ({ errors, touched, values, setFieldValue, handleAlphabeticInput, handleNumericInput }) => (
     <FadeIn>
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-[#1a602d] mb-4">Información de Contacto</h2>
@@ -517,6 +542,7 @@ const RegistrationForm = ({ onSubmit }) => {
               name="height"
               placeholder="175"
               error={touched.height && errors.height}
+              onChange={(e) => handleNumericInput(e, 'height')}
             />
           </div>
           
@@ -528,6 +554,7 @@ const RegistrationForm = ({ onSubmit }) => {
               name="weight"
               placeholder="70"
               error={touched.weight && errors.weight}
+              onChange={(e) => handleNumericInput(e, 'weight')}
             />
           </div>
           
@@ -539,6 +566,7 @@ const RegistrationForm = ({ onSubmit }) => {
               name="skinColor"
               placeholder="Ingrese color de piel"
               error={touched.skinColor && errors.skinColor}
+              onChange={(e) => handleAlphabeticInput(e, 'skinColor')}
             />
           </div>
         </div>
@@ -552,6 +580,7 @@ const RegistrationForm = ({ onSubmit }) => {
               name="hairColor"
               placeholder="Ingrese color de pelo"
               error={touched.hairColor && errors.hairColor}
+              onChange={(e) => handleAlphabeticInput(e, 'hairColor')}
             />
           </div>
           
@@ -563,6 +592,7 @@ const RegistrationForm = ({ onSubmit }) => {
               name="eyeColor"
               placeholder="Ingrese color de ojos"
               error={touched.eyeColor && errors.eyeColor}
+              onChange={(e) => handleAlphabeticInput(e, 'eyeColor')}
             />
           </div>
         </div>
@@ -580,7 +610,7 @@ const RegistrationForm = ({ onSubmit }) => {
   );
 
   // Step 4: Account Information Form
-  const renderStep4 = ({ errors, touched, values, isSubmitting, setFieldValue }) => (
+  const renderStep4 = ({ errors, touched, values, isSubmitting, setFieldValue, handleUsernameInput }) => (
     <FadeIn>
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-[#1a602d] mb-4">Credenciales de Acceso</h2>
@@ -593,6 +623,7 @@ const RegistrationForm = ({ onSubmit }) => {
             name="username"
             placeholder="Elija un nombre de usuario"
             error={touched.username && errors.username}
+            onChange={(e) => handleUsernameInput(e, 'username')}
           />
           <p className="text-xs text-gray-500 mt-1">Solo puede contener letras, números y guiones bajos (_)</p>
         </div>
@@ -733,12 +764,48 @@ const RegistrationForm = ({ onSubmit }) => {
             initialValues={initialValues}
             validationSchema={validationSchemas[step - 1]}
             onSubmit={handleFormSubmit}
+            validateOnChange={true}
+            validateOnBlur={true}
           >
-            {(formikProps) => (
-              <Form>
-                {renderStepContent(formikProps)}
-              </Form>
-            )}
+            {(formikProps) => {
+              // Create a custom onChange handler for alphabetic fields
+              const handleAlphabeticInput = (e, field) => {
+                const input = e.target.value;
+                // Filter out non-alphabetic characters
+                const sanitizedValue = input.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, '');
+                formikProps.setFieldValue(field, sanitizedValue);
+              };
+              
+              // Create a custom onChange handler for numeric fields
+              const handleNumericInput = (e, field) => {
+                const input = e.target.value;
+                // Filter out non-numeric characters
+                const sanitizedValue = input.replace(/[^0-9]/g, '');
+                formikProps.setFieldValue(field, sanitizedValue);
+              };
+              
+              // Create a custom onChange handler for username (alphanumeric + underscore)
+              const handleUsernameInput = (e, field) => {
+                const input = e.target.value;
+                // Filter out non-alphanumeric and non-underscore characters
+                const sanitizedValue = input.replace(/[^a-zA-Z0-9_]/g, '');
+                formikProps.setFieldValue(field, sanitizedValue);
+              };
+              
+              // Add custom handlers to formikProps
+              const enhancedFormikProps = {
+                ...formikProps,
+                handleAlphabeticInput,
+                handleNumericInput,
+                handleUsernameInput
+              };
+              
+              return (
+                <Form>
+                  {renderStepContent(enhancedFormikProps)}
+                </Form>
+              );
+            }}
           </Formik>
           
           {/* Registration success message */}
