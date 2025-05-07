@@ -321,17 +321,19 @@ const LicenseRenewalUpload = () => {
     >
       <div className="bg-white rounded-lg p-4">
         <h3 className="font-semibold text-[#147A31] mb-2">Completed form</h3>
-        <p className="text-gray-600">
-          1. Formulario DTOP-USC-264 "Solicitud certificado Licencia para conducir vehículos de motor".
-        </p>
+        <ol className="list-decimal pl-5">
+          <li className="text-gray-600">
+            Formulario DTOP-USC-264 <b>"Solicitud certificado Licencia para conducir vehículos de motor"</b>.
+          </li>
+        </ol>
       </div>
 
       <div className="bg-[#147A31] text-white rounded-lg p-4">
         <h3 className="font-semibold mb-2">Indications</h3>
-        <div className="space-y-2">
-          <p>1. Suba los documentos requeridos para su trámite uno a uno.</p>
-          <p>2. Una vez subas la primera, pasa a la segunda y luego a la tercera y así sucesivamente. Al finalizar, oprime el botón "finalizar". A continuación adjunte los siguientes documentos. Se requiren para continuar con el proceso de su trámite.</p>
-        </div>
+        <ol className="list-decimal pl-5 space-y-2">
+          <li>Suba los documentos requeridos para su trámite uno a uno.</li>
+          <li>Una vez subas la primera, pasa a la segunda y luego a la tercera y así sucesivamente. Al finalizar, oprime el botón "finalizar". A continuación adjunte los siguientes documentos. Se requiren para continuar con el proceso de su trámite.</li>
+        </ol>
       </div>
     </StepLayout>
   );
