@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, DotLottiePlayer, RadioGroup } from '../../components/ui';
 import { useNavigate } from 'react-router-dom';
 import useProcedures from '../../hooks/useProcedures';
@@ -6,11 +6,36 @@ import useProcedures from '../../hooks/useProcedures';
 const NewProcedure = () => {
   const [selectedProcedure, setSelectedProcedure] = useState('');
   const navigate = useNavigate();
-  const { isLoading, error, groupProceduresByType, fetchProcedures } = useProcedures();
+  const { isLoading, error, groupProceduresByType, fetchProcedures, procedures } = useProcedures();
+  
+  console.log('🏁 NewProcedure component rendering, procedures length:', procedures?.length || 0);
+  
+  // Get grouped procedures
   const { licenseOptions, vehicleOptions } = groupProceduresByType();
+  
+  console.log('🔢 Available procedures options:', { 
+    licenseOptions: licenseOptions?.length || 0, 
+    vehicleOptions: vehicleOptions?.length || 0 
+  });
+
+  useEffect(() => {
+    console.log('📋 NewProcedure mounted, procedures status:', {
+      isLoading,
+      hasError: !!error,
+      proceduresCount: procedures?.length || 0
+    });
+  }, [procedures, isLoading, error]);
+  
+  useEffect(() => {
+    if (selectedProcedure) {
+      console.log('✅ User selected procedure ID:', selectedProcedure);
+    }
+  }, [selectedProcedure]);
 
   const handleStartProcedure = () => {
     if (!selectedProcedure) return;
+    
+    console.log('▶️ Starting procedure with ID:', selectedProcedure);
     
     // Define routes for each procedure based on the tr_id
     const procedureRoutes = {
@@ -24,15 +49,25 @@ const NewProcedure = () => {
       8: '/procedures/drivers-record'
     };
     
+    const targetRoute = procedureRoutes[selectedProcedure];
+    console.log('🔀 Navigating to route:', targetRoute);
+    
     // Navigate to the appropriate route
-    navigate(procedureRoutes[selectedProcedure]);
+    navigate(targetRoute);
   };
 
   const handleBrowseAllProcedures = () => {
+    console.log('🔍 User clicked on Browse All Procedures');
     navigate('/procedures');
   };
 
+  const handleRetry = () => {
+    console.log('🔄 Retrying procedure fetch...');
+    fetchProcedures();
+  };
+
   if (isLoading) {
+    console.log('⏳ Rendering loading state...');
     return (
       <div className="p-6 bg-gradient-to-br from-[#e8f8ee] via-white to-[#e8f8ee] rounded-lg shadow-sm">
         <div className="flex justify-center items-center h-40">
@@ -43,6 +78,7 @@ const NewProcedure = () => {
   }
 
   if (error) {
+    console.log('❌ Rendering error state:', error);
     return (
       <div className="p-6 bg-gradient-to-br from-[#e8f8ee] via-white to-[#e8f8ee] rounded-lg shadow-sm">
         <div className="text-center text-red-600">
@@ -50,7 +86,7 @@ const NewProcedure = () => {
           <Button
             variant="secondary"
             className="mt-4"
-            onClick={fetchProcedures}
+            onClick={handleRetry}
           >
             Retry
           </Button>

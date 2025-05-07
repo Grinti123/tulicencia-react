@@ -17,6 +17,7 @@ import Payments from "./components/dashboard/Payments";
 import ProceduresPage from "./pages/procedures";
 import LicenseRenewal from "./pages/procedures/LicenseRenewal";
 import LicenseRenewalInfo from "./pages/LicenseRenewal";
+import LicenseRenewalUpload from "./pages/procedures/LicenseRenewalUpload";
 import VehicleTransfer from "./pages/procedures/VehicleTransfer";
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Route path="/procedures" element={<ProceduresPage />} />
         <Route path="/procedures/license-renewal" element={<LicenseRenewalInfo />} />
         <Route path="/procedures/license-renewal/form" element={<LicenseRenewal />} />
+        <Route path="/procedures/license-renewal/upload" element={<LicenseRenewalUpload />} />
         <Route path="/procedures/vehicle-transfer" element={<VehicleTransfer />} />
         {/* Add other procedure routes as they are implemented */}
         <Route path="/procedures/:procedureType" element={<ProceduresPage />} />

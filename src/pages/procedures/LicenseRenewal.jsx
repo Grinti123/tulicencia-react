@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, DotLottiePlayer, InputForm, RadioGroup } from '../../components/ui';
 import { HeaderProcedure, Footer } from '../../components';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const LicenseRenewalPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     // License type
     licenseType: 'driver',
@@ -51,6 +52,47 @@ const LicenseRenewalPage = () => {
     supportObligation: false,
     medicalDebt: false
   });
+
+  // Load user data from localStorage when component mounts
+  useEffect(() => {
+    console.log('🔄 License Renewal form loading user data from localStorage...');
+    const storedUser = localStorage.getItem('user');
+    
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUserData(parsedUser);
+        
+        // Get user item data
+        const userItem = parsedUser.item || {};
+        console.log('📋 User data loaded:', userItem);
+        
+        // Pre-fill form data with user information
+        setFormData(prevData => ({
+          ...prevData,
+          // License information
+          licenseNumber: userItem.cl_numeroLicencia || '',
+          
+          // Personal identification
+          idNumber: userItem.cl_numeroSeguro || '', // SSN
+          
+          // Address
+          residentialAddress: {
+            ...prevData.residentialAddress,
+            zipCode: userItem.cl_zip || '',
+            streetNumber: userItem.cl_direccion || '',
+            town: userItem.cl_puebloA ? userItem.cl_puebloA.toString() : ''
+          }
+        }));
+        
+        console.log('✅ Form pre-filled with user data');
+      } catch (error) {
+        console.error('❌ Error parsing user data:', error);
+      }
+    } else {
+      console.log('⚠️ No user data found in localStorage');
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -144,6 +186,16 @@ const LicenseRenewalPage = () => {
     </div>
   );
 
+  // Get user's name from userData
+  const getUserName = () => {
+    if (!userData) return 'there';
+    
+    const userItem = userData.item || {};
+    const firstName = userItem.cl_nombre || '';
+    
+    return firstName || 'there';
+  };
+
   // Render appropriate step content
   const renderFormStep = () => {
     switch(step) {
@@ -185,7 +237,7 @@ const LicenseRenewalPage = () => {
             loop={true}
           />
         </div>
-        <h2 className="text-4xl font-bold mt-6 text-[#157a3c] text-center">¡Hello Juan Pablo!</h2>
+        <h2 className="text-4xl font-bold mt-6 text-[#157a3c] text-center">¡Hello {getUserName()}!</h2>
         <p className="text-lg text-center mt-2">
           Let's start by registering your account
         </p>
@@ -252,25 +304,22 @@ const LicenseRenewalPage = () => {
             loop={true}
           />
         </div>
-        <h2 className="text-4xl font-bold mt-6 text-[#157a3c] text-center">Thank you!</h2>
-        <p className="text-lg text-center mt-2">
-          Now enter the following data
+        <h2 className="text-2xl font-semibold mt-6 text-center">Personal Identification</h2>
+        <p className="text-center mt-2">
+          Please provide your identification information
         </p>
       </>
     );
 
     const idTypeOptions = [
-      { value: 'social', label: 'Social security' },
-      { value: 'passport', label: 'Passport' }
+      { value: 'social', label: 'Social Security Number' },
+      { value: 'passport', label: 'Passport Number' }
     ];
 
     const rightContent = (
       <div className="space-y-6">
         <div>
-          <h3 className="text-lg font-medium mb-4">
-            ID <span className="text-red-500">*</span>
-          </h3>
-          
+          <h3 className="text-lg font-medium mb-4">What type of ID would you like to use?</h3>
           <RadioGroup
             options={idTypeOptions}
             name="idType"
@@ -278,24 +327,21 @@ const LicenseRenewalPage = () => {
             onChange={(value) => handleRadioChange('idType', value)}
           />
         </div>
-
+        
         <InputForm
           id="idNumber"
           name="idNumber"
-          label="Last 4 digits of the SSN / Passport Number"
+          label={formData.idType === 'social' ? 'Social Security Number' : 'Passport Number'}
+          type="text"
           value={formData.idNumber}
           onChange={handleChange}
-          placeholder="2545"
-          maxLength="4"
+          placeholder={formData.idType === 'social' ? '123-45-6789' : 'AB1234567'}
           required={true}
         />
-        <p className="text-sm text-gray-500 -mt-4">
-          This data has already been entered by you in the registry 😊
-        </p>
       </div>
     );
 
-    return renderStepContainer("ID Information", leftContent, rightContent);
+    return renderStepContainer("Personal Identification", leftContent, rightContent);
   };
 
   // Step 3: Legal Status
@@ -551,79 +597,61 @@ const LicenseRenewalPage = () => {
   const renderAddressStep = () => {
     const leftContent = (
       <>
-        <div className="w-64 h-64 mb-4">
+        <div className="w-64 h-64">
           <DotLottiePlayer
-            src="/json/chicolentes.json"
+            src="/json/direccion.json"
             autoplay={true}
             loop={true}
           />
-          </div>
-        <h2 className="text-4xl font-bold mt-6 text-[#157a3c] text-center">Ready!</h2>
-        <p className="text-lg text-center mt-2">
-          Let's proceed to register your postal address
+        </div>
+        <h2 className="text-2xl font-semibold mt-6 text-center">Your Residential Address</h2>
+        <p className="text-center mt-2">
+          Please provide your current residential address
         </p>
       </>
     );
 
-    const townOptions = [
-      { value: '', label: 'Select' },
-      { value: 'Manatí', label: 'Manatí' },
-      { value: 'San Juan', label: 'San Juan' },
-      { value: 'Ponce', label: 'Ponce' },
-      { value: 'Mayagüez', label: 'Mayagüez' },
-      { value: 'Caguas', label: 'Caguas' }
-    ];
-
     const rightContent = (
       <div className="space-y-6">
         <InputForm
-          id="residentialUrbanization"
+          id="residentialAddress.urbanization"
           name="residentialAddress.urbanization"
-          label="Urbanization, neighborhood, Condominium"
+          label="Urbanization/Development"
           value={formData.residentialAddress.urbanization}
           onChange={handleChange}
-          placeholder="Street"
+          placeholder="e.g. Villa Andalucía"
         />
         
         <InputForm
-          id="residentialStreetNumber"
+          id="residentialAddress.streetNumber"
           name="residentialAddress.streetNumber"
-          label="Number, Street, Apartment Number"
+          label="Street Number and Name"
           value={formData.residentialAddress.streetNumber}
           onChange={handleChange}
-          placeholder="123"
+          placeholder="e.g. 123 Main St"
+          required={true}
         />
         
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <InputForm
-              id="residentialTown"
-              name="residentialAddress.town"
-              label="Town"
-              type="select"
-              value={formData.residentialAddress.town}
-              onChange={handleChange}
-              options={townOptions}
-            />
-          </div>
-          
-          <div className="flex-1">
-            <InputForm
-              id="residentialZipCode"
-              name="residentialAddress.zipCode"
-              label="Zip code"
-              value={formData.residentialAddress.zipCode}
-              onChange={handleChange}
-              placeholder="00065"
-              maxLength="5"
-            />
-              </div>
-            </div>
+        <InputForm
+          id="residentialAddress.town"
+          name="residentialAddress.town"
+          label="Town/City"
+          value={formData.residentialAddress.town}
+          onChange={handleChange}
+          placeholder="e.g. San Juan"
+          required={true}
+        />
         
-        <p className="text-sm text-gray-500 mt-2">
-          This data has already been entered by you in the registry 😊
-        </p>
-          </div>
+        <InputForm
+          id="residentialAddress.zipCode"
+          name="residentialAddress.zipCode"
+          label="Zip Code"
+          value={formData.residentialAddress.zipCode}
+          onChange={handleChange}
+          placeholder="e.g. 00926"
+          required={true}
+        />
+      </div>
     );
 
     return renderStepContainer("Residential Address", leftContent, rightContent);
@@ -639,7 +667,7 @@ const LicenseRenewalPage = () => {
             autoplay={true}
             loop={true}
           />
-          </div>
+        </div>
         <h2 className="text-4xl font-bold mt-6 text-[#157a3c] text-center">Conteste carefully</h2>
         <p className="text-lg text-center mt-2">the following.</p>
       </>
@@ -663,15 +691,15 @@ const LicenseRenewalPage = () => {
             value={formData.mailingAddressSameAsResidential.toString()}
             onChange={(value) => handleRadioChange('mailingAddressSameAsResidential', value === 'true')}
           />
-              </div>
+        </div>
         
-              <div>
+        <div>
           <p className="text-md text-gray-700">
             We will continue with the data of your previously registered 
             <span className="font-semibold"> residencial address</span> 😊
           </p>
-              </div>
-            </div>
+        </div>
+      </div>
     );
 
     return renderStepContainer("Mailing Address", leftContent, rightContent);
@@ -687,7 +715,7 @@ const LicenseRenewalPage = () => {
             autoplay={true}
             loop={true}
           />
-          </div>
+        </div>
         <h2 className="text-4xl font-bold mt-6 text-[#157a3c] text-center">Conteste carefully</h2>
         <p className="text-lg text-center mt-2">the following</p>
       </>
@@ -719,7 +747,7 @@ const LicenseRenewalPage = () => {
             value={formData.licenseSuspended.toString()}
             onChange={(value) => handleRadioChange('licenseSuspended', value === 'true')}
           />
-              </div>
+        </div>
         
         {formData.licenseSuspended && (
           <InputForm
@@ -733,7 +761,7 @@ const LicenseRenewalPage = () => {
           />
         )}
       
-              <div>
+        <div>
           <h3 className="text-lg font-medium mb-4">
             Have you been institutionalized for mental disorders?
           </h3>
@@ -744,8 +772,8 @@ const LicenseRenewalPage = () => {
             value={formData.institutionalized.toString()}
             onChange={(value) => handleRadioChange('institutionalized', value === 'true')}
           />
-              </div>
-            </div>
+        </div>
+      </div>
     );
 
     return renderStepContainer("Legal Questions", leftContent, rightContent);
@@ -761,7 +789,7 @@ const LicenseRenewalPage = () => {
             autoplay={true}
             loop={true}
           />
-          </div>
+        </div>
         <h2 className="text-4xl font-bold mt-6 text-[#157a3c] text-center">Noted!</h2>
         <p className="text-lg text-center mt-2">
           Just 2 ask more.
@@ -815,7 +843,7 @@ const LicenseRenewalPage = () => {
             autoplay={true}
             loop={true}
           />
-          </div>
+        </div>
         <h2 className="text-4xl font-bold mt-6 text-[#157a3c] text-center">Noted!</h2>
         <p className="text-lg text-center mt-2">
           Just 1 ask more.
@@ -830,7 +858,7 @@ const LicenseRenewalPage = () => {
 
     const rightContent = (
       <div className="space-y-6">
-          <div>
+        <div>
           <h3 className="text-lg font-medium mb-4">
             Have you been convicted under the Narcotics Act?
           </h3>
@@ -852,16 +880,16 @@ const LicenseRenewalPage = () => {
             value={formData.convictionDateNarcotics}
             onChange={handleChange}
           />
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
 
     return renderStepContainer("Legal Questions", leftContent, rightContent);
   };
 
   // Step 11: Thank You
   const renderThankYouStep = () => {
-  return (
+    return (
       <div className="min-h-screen flex flex-col bg-[#e8f8ee]">
         <HeaderProcedure title="License Renewal" />
         <main className="flex-grow py-8">
@@ -888,7 +916,7 @@ const LicenseRenewalPage = () => {
               
               <div className="flex flex-col gap-4">
                 <Button 
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/procedures/license-renewal/upload')}
                   variant="primary"
                 >
                   Let's start
@@ -902,13 +930,13 @@ const LicenseRenewalPage = () => {
                 </button>
               </div>
             </div>
-      </div>
+          </div>
         </main>
-    </div>
-  );
+      </div>
+    );
   };
 
-  // The main render function which returns the entire form
+  // Render the current step
   return renderFormStep();
 };
 
