@@ -651,20 +651,20 @@ const RegistrationForm = ({ onSubmit }) => {
                 </svg>
                 <span className="font-medium text-green-700">¡Registro exitoso!</span> Tu cuenta ha sido creada correctamente.
               </div>
-            </div>
+                </div>
           )}
           
           {/* Registration error message */}
           {registrationError && !registrationSuccess && (
-            <div className="p-3 bg-red-50 rounded-lg border border-red-100 text-red-600 text-sm mt-4">
-              <div className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                {registrationError}
-              </div>
-            </div>
-          )}
+                  <div className="p-3 bg-red-50 rounded-lg border border-red-100 text-red-600 text-sm mt-4">
+                    <div className="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {registrationError}
+                    </div>
+                  </div>
+                )}
         </div>
       </FadeIn>
     </div>

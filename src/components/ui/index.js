@@ -10,3 +10,5 @@ export { default as RadioGroup } from './RadioGroup';
 export { default as Section } from './Section';
 export { default as Tabs } from './Tabs'; 
 export { default as InputForm } from './InputForm';
+export { default as FileUploadField } from './FileUploadField';
+export { default as StepLayout } from './StepLayout';

@@ -123,11 +123,11 @@ const LicenseRenewal = () => {
                     <h2 className="text-3xl md:text-4xl font-bold text-[#157a3c] mb-6">Price: $1</h2>
                     
                     <div className="flex flex-col md:flex-row gap-4 justify-center">
-                      <Link to="/procedures/license-renewal/form" className="bg-[#157a3c] hover:bg-[#1a602d] text-white font-semibold py-3 px-6 rounded-full shadow-sm transition duration-200 text-center">
+                      <Link to="/procedures/license-renewal/form" className="bg-[#157a3c] hover:bg-[#1a602d] text-white font-semibold py-3 px-8 rounded-full shadow-sm transition duration-200 text-center w-full md:w-auto">
                         Start now
                       </Link>
                       
-                      <Link to="/" className="bg-white hover:bg-gray-100 text-[#157a3c] font-semibold py-3 px-6 rounded-full border border-[#157a3c] shadow-sm transition duration-200 text-center">
+                      <Link to="/" className="bg-white hover:bg-gray-100 text-[#157a3c] font-semibold py-3 px-8 rounded-full border border-[#157a3c] shadow-sm transition duration-200 text-center w-full md:w-auto">
                         Go back
                       </Link>
                     </div>

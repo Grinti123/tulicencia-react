@@ -914,10 +914,11 @@ const LicenseRenewalPage = () => {
                 The next step is to upload your documents and photos. It's quick and easy!
               </p>
               
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col items-center gap-4">
                 <Button 
                   onClick={() => navigate('/procedures/license-renewal/upload')}
                   variant="primary"
+                  className="w-full md:w-auto px-8"
                 >
                   Let's start
                 </Button>

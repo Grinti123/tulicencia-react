@@ -1,13 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button, Container, DotLottiePlayer } from '../../components/ui';
+import React, { useState, useEffect } from 'react';
+import { Button, Container, DotLottiePlayer, FileUploadField, StepLayout } from '../../components/ui';
 import { HeaderProcedure, Footer } from '../../components';
 import { useNavigate } from 'react-router-dom';
-import { jsPDF } from 'jspdf'; // Import jsPDF library
+import { jsPDF } from 'jspdf';
+import useCamera from '../../hooks/useCamera';
+import useSignature from '../../hooks/useSignature';
 
 // Color constants for consistency
 const COLORS = {
   primary: '#147A31',
-  secondary: '#6949FF',
+  secondary: '#147A31',
   lightBg: '#e8f8ee',
   pageBg: '#f7fdf9',
 };
@@ -23,7 +25,9 @@ const LicenseRenewalUpload = () => {
       birthCertificate: null,
       proofOfAddress: null,
       medicalCertification: null,
-      licensePhotos: null
+      licensePhotos: null,
+      licensePhotosFront: null,
+      licensePhotosBack: null
     }
   });
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -32,253 +36,61 @@ const LicenseRenewalUpload = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
   
-  // Camera related states
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const streamRef = useRef(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
-  const [cameraError, setCameraError] = useState(null);
+  // Initialize hooks
+  const camera = useCamera();
+  const signature = useSignature();
 
-  // Signature related states
-  const signatureCanvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [hasSignature, setHasSignature] = useState(false);
-  const [signatureContext, setSignatureContext] = useState(null);
-  
-  // Start camera when entering the selfie step
+  // Update camera when changing steps
   useEffect(() => {
     if (step === 2) {
-      startCamera();
+      camera.startCamera();
     } else {
-      stopCamera();
+      camera.stopCamera();
     }
-    
-    // Cleanup on component unmount
+
     return () => {
-      stopCamera();
+      // Ensure camera is stopped when component unmounts
+      if (step === 2) {
+        camera.stopCamera();
+      }
     };
   }, [step]);
 
-  // Initialize signature canvas when reaching the signature step
+  // Sync camera photo with form data
   useEffect(() => {
-    if (step === 3 && signatureCanvasRef.current) {
-      const canvas = signatureCanvasRef.current;
-      const context = canvas.getContext('2d');
-      
-      // Set canvas dimensions and style
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      
-      // Setup drawing context
-      context.lineWidth = 2;
-      context.lineCap = 'round';
-      context.strokeStyle = '#000000';
-      setSignatureContext(context);
-      
-      console.log('✏️ Signature canvas initialized');
+    if (camera.photoFile) {
+      handleFileChange('selfie', camera.photoFile);
     }
-  }, [step]);
+  }, [camera.photoFile]);
 
-  // Cleanup PDF URL on component unmount
+  // Sync signature with form data
+  useEffect(() => {
+    if (signature.signatureFile) {
+      handleFileChange('signature', signature.signatureFile);
+    }
+  }, [signature.signatureFile]);
+
+  // Cleanup resources on component unmount
   useEffect(() => {
     return () => {
+      // Revoke any object URLs to prevent memory leaks
       if (pdfPreviewUrl) {
         URL.revokeObjectURL(pdfPreviewUrl);
       }
+      
+      // Ensure selfie URL is revoked if it exists
+      if (formData.selfie) {
+        try {
+          URL.revokeObjectURL(URL.createObjectURL(formData.selfie));
+        } catch (error) {
+          console.error('Error revoking selfie URL:', error);
+        }
+      }
+      
+      // Stop camera if active
+      camera.stopCamera();
     };
   }, []);
-
-  // Handle window resize for canvas
-  useEffect(() => {
-    const handleResize = () => {
-      if (step === 3 && signatureCanvasRef.current && signatureContext) {
-        const canvas = signatureCanvasRef.current;
-        const currentDrawing = canvas.toDataURL();
-        
-        // Create an image to store the current drawing
-        const img = new Image();
-        img.onload = () => {
-          // Resize canvas
-          canvas.width = canvas.offsetWidth;
-          canvas.height = canvas.offsetHeight;
-          
-          // Reset context properties after resize
-          signatureContext.lineWidth = 2;
-          signatureContext.lineCap = 'round';
-          signatureContext.strokeStyle = '#000000';
-          
-          // Draw the previous content back
-          signatureContext.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-        img.src = currentDrawing;
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [step, signatureContext]);
-
-  // Initialize and start the camera
-  const startCamera = async () => {
-    try {
-      console.log('🎥 Starting camera...');
-      setCameraError(null);
-      
-      // Request camera access with preferred settings
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: 'user', // Front camera for selfies
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: false 
-      });
-      
-      // Save stream reference to stop it later
-      streamRef.current = stream;
-      
-      // Connect stream to video element
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setIsCameraActive(true);
-        console.log('✅ Camera started successfully');
-      }
-    } catch (error) {
-      console.error('❌ Camera error:', error);
-      setCameraError(`Camera error: ${error.message || 'Could not access camera'}`);
-      setIsCameraActive(false);
-    }
-  };
-
-  // Stop the camera and release resources
-  const stopCamera = () => {
-    if (streamRef.current) {
-      console.log('🛑 Stopping camera stream');
-      const tracks = streamRef.current.getTracks();
-      tracks.forEach(track => track.stop());
-      streamRef.current = null;
-      setIsCameraActive(false);
-    }
-  };
-
-  // Take a photo using the canvas
-  const takePhoto = () => {
-    if (!isCameraActive || !videoRef.current || !canvasRef.current) {
-      console.log('⚠️ Cannot take photo: camera inactive or refs not ready');
-      return;
-    }
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    
-    // Draw the current video frame to canvas
-    const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Convert canvas to file
-    canvas.toBlob((blob) => {
-      if (blob) {
-        // Create a File object from the blob
-        const file = new File([blob], "selfie.jpg", { type: "image/jpeg" });
-        handleFileChange('selfie', file);
-        console.log('📸 Photo taken and saved');
-      }
-    }, 'image/jpeg', 0.9);
-  };
-
-  // Signature drawing handlers
-  const startDrawing = (e) => {
-    if (!signatureContext) return;
-    
-    // Get mouse position relative to canvas
-    const { offsetX, offsetY } = getEventCoordinates(e);
-    
-    // Start a new path
-    signatureContext.beginPath();
-    signatureContext.moveTo(offsetX, offsetY);
-    setIsDrawing(true);
-    setHasSignature(true);
-  };
-
-  const draw = (e) => {
-    if (!isDrawing || !signatureContext) return;
-    
-    // Get mouse position
-    const { offsetX, offsetY } = getEventCoordinates(e);
-    
-    // Draw line to current position
-    signatureContext.lineTo(offsetX, offsetY);
-    signatureContext.stroke();
-  };
-
-  const stopDrawing = () => {
-    if (!signatureContext) return;
-    
-    signatureContext.closePath();
-    setIsDrawing(false);
-    
-    // Save signature image if drawing happened
-    if (hasSignature && signatureCanvasRef.current) {
-      saveSignatureImage();
-    }
-  };
-
-  // Handle touch events coordinates
-  const getEventCoordinates = (e) => {
-    if (!signatureCanvasRef.current) return { offsetX: 0, offsetY: 0 };
-    
-    const canvas = signatureCanvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    
-    // Handle both mouse and touch events
-    if (e.touches && e.touches[0]) {
-      return { 
-        offsetX: e.touches[0].clientX - rect.left,
-        offsetY: e.touches[0].clientY - rect.top
-      };
-    }
-    
-    return {
-      offsetX: e.clientX - rect.left,
-      offsetY: e.clientY - rect.top
-    };
-  };
-
-  // Save signature as image file
-  const saveSignatureImage = () => {
-    if (!signatureCanvasRef.current) return;
-    
-    try {
-      const canvas = signatureCanvasRef.current;
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const file = new File([blob], "signature.jpg", { type: "image/jpeg" });
-          handleFileChange('signature', file);
-          console.log('✏️ Signature saved');
-        }
-      });
-    } catch (error) {
-      console.error('Error saving signature:', error);
-    }
-  };
-
-  // Clear signature canvas
-  const clearSignature = () => {
-    if (!signatureCanvasRef.current || !signatureContext) return;
-    
-    signatureContext.clearRect(
-      0, 0, 
-      signatureCanvasRef.current.width, 
-      signatureCanvasRef.current.height
-    );
-    setHasSignature(false);
-    handleFileChange('signature', null);
-    console.log('🧹 Signature cleared');
-  };
 
   const handleFileChange = (field, file) => {
     if (field.includes('.')) {
@@ -299,6 +111,20 @@ const LicenseRenewalUpload = () => {
   };
 
   const nextStep = () => {
+    // Special handling for signature step
+    if (step === 3 && signature.hasSignature && !formData.signature) {
+      // First save the signature, then proceed
+      signature.saveSignature();
+      
+      // Give time for signature to be saved before proceeding
+      setTimeout(() => {
+        setStep(prev => prev + 1);
+        window.scrollTo(0, 0);
+      }, 300);
+      
+      return;
+    }
+    
     setStep(prev => prev + 1);
     window.scrollTo(0, 0);
   };
@@ -311,8 +137,15 @@ const LicenseRenewalUpload = () => {
   // Show document preview with signature
   const showDocumentPreview = async () => {
     if (!formData.signature) {
-      console.log('⚠️ No signature available for preview');
-      return;
+      // If we have a signature drawing but it's not saved yet, save it first
+      if (signature.hasSignature) {
+        signature.saveSignature();
+        // Wait for signature to be saved
+        await new Promise(resolve => setTimeout(resolve, 300));
+      } else {
+        console.log('⚠️ No signature available for preview');
+        return;
+      }
     }
     
     try {
@@ -321,21 +154,25 @@ const LicenseRenewalUpload = () => {
       // Get user data if available
       let userName = 'Juan Pablo Domínguez';
       let userAddress = 'Calle Principal #123, San Juan, PR 00901';
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      if (userData && userData.item) {
-        const userItem = userData.item;
-        const firstName = userItem.cl_nombre || '';
-        const lastName = userItem.cl_primerApellido || '';
-        const secondLastName = userItem.cl_segundoApellido || '';
-        
-        if (firstName || lastName || secondLastName) {
-          userName = `${firstName} ${lastName} ${secondLastName}`.trim();
+      try {
+        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+        if (userData && userData.item) {
+          const userItem = userData.item;
+          const firstName = userItem.cl_nombre || '';
+          const lastName = userItem.cl_primerApellido || '';
+          const secondLastName = userItem.cl_segundoApellido || '';
+          
+          if (firstName || lastName || secondLastName) {
+            userName = `${firstName} ${lastName} ${secondLastName}`.trim();
+          }
+          
+          // Get address if available
+          if (userItem.cl_direccion) {
+            userAddress = userItem.cl_direccion;
+          }
         }
-        
-        // Get address if available
-        if (userItem.cl_direccion) {
-          userAddress = userItem.cl_direccion;
-        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
       }
       
       // Create a new PDF document
@@ -345,103 +182,111 @@ const LicenseRenewalUpload = () => {
         format: 'a4'
       });
       
-      // Set font
+      // Set font and add title
       doc.setFont('helvetica');
-      
-      // Add title
       doc.setFontSize(18);
-      doc.setTextColor(COLORS.secondary.replace('#', '')); // Remove # for jsPDF color
+      doc.setTextColor(COLORS.secondary.replace('#', '')); 
       doc.text('Carta de Autorización', 105, 40, { align: 'center' });
       
       // Add logo
       try {
-        // Create an image element for the logo
         const logoImg = new Image();
         logoImg.src = '/img/Mesa2.png';
-        logoImg.crossOrigin = "Anonymous"; // Try to avoid CORS issues
+        logoImg.crossOrigin = "Anonymous";
         
-        // Wait for logo to load
         await new Promise((resolve, reject) => {
           logoImg.onload = resolve;
           logoImg.onerror = reject;
-          // Timeout as fallback
-          setTimeout(resolve, 2000);
+          // Set a reasonable timeout
+          const timeout = setTimeout(() => {
+            console.warn('Logo image load timed out, continuing without logo');
+            resolve();
+          }, 3000);
+          
+          // Clear timeout if image loads or errors
+          logoImg.onload = () => {
+            clearTimeout(timeout);
+            resolve();
+          };
+          logoImg.onerror = () => {
+            clearTimeout(timeout);
+            console.error('Error loading logo image');
+            resolve(); // Continue without logo
+          };
         });
         
-        // Create canvas with proper dimensions to maintain aspect ratio
         const canvas = document.createElement('canvas');
         const aspectRatio = logoImg.width / logoImg.height;
-        const logoWidth = 60; // Width in mm
+        const logoWidth = 60;
         const logoHeight = logoWidth / aspectRatio;
         
-        // Set canvas size with appropriate scale for better quality
-        canvas.width = logoImg.width;
-        canvas.height = logoImg.height;
+        canvas.width = logoImg.width || 100;
+        canvas.height = logoImg.height || 100;
         
-        // Draw the logo on canvas
         const ctx = canvas.getContext('2d');
         ctx.drawImage(logoImg, 0, 0, logoImg.width, logoImg.height);
         
-        // Get data URL and add to PDF
         const logoDataUrl = canvas.toDataURL('image/png');
         doc.addImage(logoDataUrl, 'PNG', 75, 15, logoWidth, logoHeight);
-        
       } catch (e) {
         console.error('Error adding logo to PDF:', e);
       }
       
       // Add document text
       doc.setFontSize(11);
-      doc.setTextColor(0, 0, 0); // Black
+      doc.setTextColor(0, 0, 0);
       const text = 'Sirva la presente carta para autorizar a Autolicencia LLC, DBA Cesco Online y sus gestores autorizados a tramitar cualquier gestión necesaria ante el Departamento de Transportación y Obras Públicas, CESCO, DISCO, Autocríptalo y agencia necesaria para el procesamiento de mi licencia de conducir y/o gestiones vehiculares.';
       
-      // Simple text wrapping function
       const splitText = doc.splitTextToSize(text, 170);
       doc.text(splitText, 20, 50);
-      
-      // Add closing text
       doc.text('Gracias,', 20, 80);
       
       // Add signature
       if (formData.signature) {
         try {
           const signatureUrl = URL.createObjectURL(formData.signature);
-          
-          // Create a temporary image to load the signature
           const signatureImg = new Image();
           signatureImg.src = signatureUrl;
           
           await new Promise((resolve) => {
-            signatureImg.onload = resolve;
-            setTimeout(resolve, 1000); // Timeout as fallback
+            const timeout = setTimeout(() => {
+              console.warn('Signature image load timed out, continuing without signature');
+              resolve();
+            }, 3000);
+            
+            signatureImg.onload = () => {
+              clearTimeout(timeout);
+              resolve();
+            };
+            signatureImg.onerror = () => {
+              clearTimeout(timeout);
+              console.error('Error loading signature image');
+              resolve();
+            };
           });
           
-          // Add signature to PDF with proper dimensions
           const canvas = document.createElement('canvas');
-          canvas.width = signatureImg.width;
-          canvas.height = signatureImg.height;
+          canvas.width = signatureImg.width || 200;
+          canvas.height = signatureImg.height || 100;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(signatureImg, 0, 0);
           const signatureDataUrl = canvas.toDataURL('image/png');
           
           doc.addImage(signatureDataUrl, 'PNG', 20, 90, 50, 20);
-          
-          // Clean up
           URL.revokeObjectURL(signatureUrl);
         } catch (e) {
           console.error('Error adding signature to PDF:', e);
         }
       }
       
-      // Add current date
+      // Add current date and name
       const currentDate = new Date();
       const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getFullYear()}`;
       
-      // Add name and date
       doc.setFontSize(10);
       doc.setTextColor(COLORS.primary.replace('#', ''));
       doc.text(userName, 20, 120);
-      doc.setTextColor(0, 0, 0); // Reset to black
+      doc.setTextColor(0, 0, 0);
       doc.text(userAddress, 20, 125);
       doc.text(formattedDate, 20, 130);
       
@@ -449,7 +294,6 @@ const LicenseRenewalUpload = () => {
       const pdfBlob = doc.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
       
-      // Set the PDF URL and show preview
       setPdfPreviewUrl(pdfUrl);
       setShowPreview(true);
       
@@ -462,7 +306,6 @@ const LicenseRenewalUpload = () => {
   // Close document preview
   const closePreview = () => {
     setShowPreview(false);
-    // Clean up the URL object when closing the preview
     if (pdfPreviewUrl) {
       URL.revokeObjectURL(pdfPreviewUrl);
       setPdfPreviewUrl(null);
@@ -471,423 +314,491 @@ const LicenseRenewalUpload = () => {
 
   // Step 1: Instructions and Document List
   const renderInstructionsStep = () => (
-    <div className="bg-[#e8f8ee] rounded-3xl p-6 md:p-10 shadow-sm">
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Left Column - Illustration and Title */}
-        <div className="flex flex-col items-center justify-center">
-          <div className="w-64 h-64 mb-4">
-            <DotLottiePlayer
-              src="/json/chicolentes.json"
-              autoplay={true}
-              loop={true}
-            />
-          </div>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-[#147A31]">Uploading your photos</h2>
-            <p className="text-lg text-gray-600">and documents will be super easy.</p>
-          </div>
-        </div>
-
-        {/* Right Column - Form Details */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg p-4">
-            <h3 className="font-semibold text-[#147A31] mb-2">Completed form</h3>
-            <p className="text-gray-600">
-              1. Formulario DTOP-USC-264 "Solicitud certificado Licencia para conducir vehículos de motor".
-            </p>
-          </div>
-
-          <div className="bg-[#6949FF] text-white rounded-lg p-4">
-            <h3 className="font-semibold mb-2">Indications</h3>
-            <div className="space-y-2">
-              <p>1. Suba los documentos requeridos para su trámite uno a uno.</p>
-              <p>2. Una vez subas la primera, pasa a la segunda y luego a la tercera y así sucesivamente. Al finalizar, oprime el botón "finalizar". A continuación adjunte los siguientes documentos. Se requiren para continuar con el proceso de su trámite.</p>
-            </div>
-          </div>
-        </div>
+    <StepLayout
+      title="Uploading your photos and documents will be super easy."
+      onNext={nextStep}
+      showPrevButton={false}
+    >
+      <div className="bg-white rounded-lg p-4">
+        <h3 className="font-semibold text-[#147A31] mb-2">Completed form</h3>
+        <p className="text-gray-600">
+          1. Formulario DTOP-USC-264 "Solicitud certificado Licencia para conducir vehículos de motor".
+        </p>
       </div>
 
-      <div className="flex justify-end mt-8">
-        <Button
-          variant="primary"
-          onClick={nextStep}
-        >
-          Next
-        </Button>
+      <div className="bg-[#147A31] text-white rounded-lg p-4">
+        <h3 className="font-semibold mb-2">Indications</h3>
+        <div className="space-y-2">
+          <p>1. Suba los documentos requeridos para su trámite uno a uno.</p>
+          <p>2. Una vez subas la primera, pasa a la segunda y luego a la tercera y así sucesivamente. Al finalizar, oprime el botón "finalizar". A continuación adjunte los siguientes documentos. Se requiren para continuar con el proceso de su trámite.</p>
+        </div>
       </div>
-    </div>
+    </StepLayout>
   );
 
   // Step 2: Selfie Upload with auto-activated camera
   const renderSelfieStep = () => (
-    <div className="bg-[#e8f8ee] rounded-3xl p-6 md:p-10 shadow-sm">
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Left Column */}
-        <div className="flex flex-col items-center justify-center">
-          <div className="w-64 h-64 mb-4">
-            <DotLottiePlayer
-              src="/json/chicolentes.json"
-              autoplay={true}
-              loop={true}
-            />
-          </div>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-[#147A31]">Let's take a</h2>
-            <h2 className="text-2xl font-bold text-[#6949FF]">selfie first!</h2>
-            <p className="text-lg text-gray-600 mt-2">Smile and take a selfie.</p>
-          </div>
-        </div>
+    <StepLayout
+      title="Let's take selfie first!"
+      subtitle="Smile and take a selfie."
+      onNext={nextStep}
+      onPrev={prevStep}
+      nextDisabled={!formData.selfie}
+    >
+      <div className="bg-white rounded-lg p-4">
+        <p className="text-gray-600 mb-4">
+          Note: Make sure your face is well lit and the image is clear. (Photograph must be taken against a white background.)
+        </p>
 
-        {/* Right Column */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-gray-600 mb-4">
-              Note: Make sure your face is well lit and the image is clear. (Photograph must be taken against a white background.)
-            </p>
-
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-              {formData.selfie ? (
-                <div className="space-y-4">
-                  <img 
-                    src={URL.createObjectURL(formData.selfie)} 
-                    alt="Selfie preview" 
-                    className="max-w-full h-auto mx-auto rounded-lg"
-                  />
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      handleFileChange('selfie', null);
-                      startCamera(); // Restart camera after deleting photo
-                    }}
-                  >
-                    Redo photo
-                  </Button>
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+          {formData.selfie ? (
+            <div className="space-y-4">
+              <img 
+                src={URL.createObjectURL(formData.selfie)} 
+                alt="Selfie preview" 
+                className="max-w-full h-auto mx-auto rounded-lg"
+                onLoad={(e) => {
+                  // Clean up the object URL after the image loads to prevent memory leaks
+                  const src = e.target.src;
+                  return () => URL.revokeObjectURL(src);
+                }}
+              />
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  // Revoke the object URL before changing the state
+                  if (formData.selfie) {
+                    try {
+                      const url = URL.createObjectURL(formData.selfie);
+                      URL.revokeObjectURL(url);
+                    } catch (error) {
+                      console.error('Error revoking selfie URL:', error);
+                    }
+                  }
+                  handleFileChange('selfie', null);
+                  camera.startCamera();
+                }}
+              >
+                Redo photo
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {camera.cameraError ? (
+                <div className="bg-red-50 p-4 rounded-lg text-red-600">
+                  <p>{camera.cameraError}</p>
+                  <p className="mt-2 text-sm">Please allow camera access or use the file upload option below.</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {cameraError ? (
-                    <div className="bg-red-50 p-4 rounded-lg text-red-600">
-                      <p>{cameraError}</p>
-                      <p className="mt-2 text-sm">Please allow camera access or use the file upload option below.</p>
-                    </div>
-                  ) : (
-                    <>
-                      <video 
-                        ref={videoRef}
-                        autoPlay 
-                        playsInline 
-                        className="w-full h-auto rounded-lg border border-gray-200 bg-black"
-                        style={{ display: isCameraActive ? 'block' : 'none' }}
-                        onCanPlay={() => videoRef.current.play()}
-                      />
-                      <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
-                    </>
-                  )}
-                  
-                  <div className="flex flex-col sm:flex-row justify-center gap-3">
-                    {isCameraActive && (
-                      <Button
-                        variant="primary"
-                        onClick={takePhoto}
-                      >
-                        Take Photo
-                      </Button>
-                    )}
-                    
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      id="selfieUpload"
-                      onChange={(e) => {
-                        if (e.target.files[0]) {
-                          handleFileChange('selfie', e.target.files[0]);
-                          stopCamera(); // Stop camera after uploading a file
-                        }
-                      }}
-                    />
-                    <label htmlFor="selfieUpload">
-                      <Button
-                        variant="secondary"
-                        as="span"
-                      >
-                        Upload from device
-                      </Button>
-                    </label>
-                      
-                    {cameraError && (
-                      <Button
-                        variant="secondary"
-                        onClick={startCamera}
-                      >
-                        Retry Camera
-                      </Button>
-                    )}
-                  </div>
-                </div>
+                <>
+                  <video 
+                    ref={camera.videoRef}
+                    autoPlay 
+                    playsInline 
+                    className="w-full h-auto rounded-lg border border-gray-200 bg-black"
+                    style={{ display: camera.isCameraActive ? 'block' : 'none' }}
+                    onCanPlay={() => camera.videoRef.current?.play().catch(err => console.error('Video play error:', err))}
+                  />
+                  <canvas ref={camera.canvasRef} style={{ display: 'none' }}></canvas>
+                </>
               )}
+              
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
+                {camera.isCameraActive && (
+                  <Button
+                    variant="primary"
+                    onClick={camera.takePhoto}
+                  >
+                    Take Photo
+                  </Button>
+                )}
+                
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id="selfieUpload"
+                  onChange={(e) => {
+                    if (e.target.files[0]) {
+                      if (e.target.files[0].size > 10 * 1024 * 1024) {
+                        alert("File is too large. Maximum size is 10MB.");
+                        return;
+                      }
+                      handleFileChange('selfie', e.target.files[0]);
+                      camera.stopCamera();
+                    }
+                  }}
+                />
+                <label htmlFor="selfieUpload">
+                  <Button
+                    variant="secondary"
+                    as="span"
+                  >
+                    Upload from device
+                  </Button>
+                </label>
+                  
+                {camera.cameraError && (
+                  <Button
+                    variant="secondary"
+                    onClick={camera.startCamera}
+                  >
+                    Retry Camera
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
+        
+        {!formData.selfie && (
+          <p className="text-sm text-red-500 mt-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            A selfie is required to continue
+          </p>
+        )}
       </div>
-
-      <div className="flex justify-between mt-8">
-        <Button
-          variant="secondary"
-          onClick={prevStep}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="primary"
-          onClick={nextStep}
-          disabled={!formData.selfie}
-        >
-          Next
-        </Button>
-      </div>
-    </div>
+    </StepLayout>
   );
 
   // Step 3: Digital Signature
   const renderSignatureStep = () => (
-    <div className="bg-[#e8f8ee] rounded-3xl p-6 md:p-10 shadow-sm">
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Left Column */}
-        <div className="flex flex-col items-center justify-center">
-          <div className="w-64 h-64 mb-4">
-            <DotLottiePlayer
-              src="/json/chicolentes.json"
-              autoplay={true}
-              loop={true}
+    <StepLayout
+      title="Now we need your digital signature"
+      subtitle="Simply sign in the box using your finger or mouse"
+      onNext={() => {
+        // If there's a signature on canvas but not saved yet, save it first
+        if (signature.hasSignature && !formData.signature) {
+          try {
+            signature.saveSignature();
+            // Use a timeout to ensure signature is saved before proceeding
+            setTimeout(nextStep, 300);
+          } catch (error) {
+            console.error('Error saving signature:', error);
+            alert('There was an error saving your signature. Please try again.');
+          }
+        } else {
+          nextStep();
+        }
+      }}
+      onPrev={prevStep}
+      nextDisabled={!termsAccepted || (!signature.hasSignature && !formData.signature)}
+    >
+      <div className="bg-white rounded-lg p-4">
+        <p className="text-gray-600 mb-4">Please sign below. Try to make your signature as clear as possible.</p>
+
+        <div className="border-2 border-gray-300 rounded-lg p-4 bg-white">
+          <div className="relative">
+            {!signature.hasSignature && !formData.signature && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-gray-400">
+                Sign here
+              </div>
+            )}
+            <canvas 
+              ref={signature.canvasRef}
+              className="w-full h-40 touch-none cursor-crosshair bg-white rounded"
+              onMouseDown={signature.startDrawing}
+              onMouseMove={signature.draw}
+              onMouseUp={signature.stopDrawing}
+              onMouseLeave={signature.stopDrawing}
+              onTouchStart={signature.startDrawing}
+              onTouchMove={signature.draw}
+              onTouchEnd={signature.stopDrawing}
             />
           </div>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-[#147A31]">Now we need your</h2>
-            <h2 className="text-2xl font-bold text-[#6949FF]">digital signature</h2>
-            <p className="text-lg text-gray-600 mt-2">Simply sign in the box using your finger or mouse</p>
+
+          <div className="flex items-center mt-4">
+            <input
+              type="checkbox"
+              id="termsAccept"
+              className="h-4 w-4 text-[#147A31] border-gray-300 rounded"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+            />
+            <label htmlFor="termsAccept" className="ml-2 text-sm text-gray-600">
+              I accept the Terms and Conditions
+            </label>
           </div>
-        </div>
 
-        {/* Right Column */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-gray-600 mb-4">Please sign below. Try to make your signature as clear as possible.</p>
-
-            <div className="border-2 border-gray-300 rounded-lg p-4 bg-white">
-              {/* Signature canvas with touch and mouse support */}
-              <div className="relative">
-                {!hasSignature && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-gray-400">
-                    Sign here
-                  </div>
-                )}
-                <canvas 
-                  ref={signatureCanvasRef}
-                  className="w-full h-40 touch-none cursor-crosshair bg-white rounded"
-                  onMouseDown={startDrawing}
-                  onMouseMove={draw}
-                  onMouseUp={stopDrawing}
-                  onMouseLeave={stopDrawing}
-                  onTouchStart={startDrawing}
-                  onTouchMove={draw}
-                  onTouchEnd={stopDrawing}
-                />
-              </div>
-
-              <div className="flex items-center mt-4">
-                <input
-                  type="checkbox"
-                  id="termsAccept"
-                  className="h-4 w-4 text-[#147A31] border-gray-300 rounded"
-                  checked={termsAccepted}
-                  onChange={(e) => setTermsAccepted(e.target.checked)}
-                />
-                <label htmlFor="termsAccept" className="ml-2 text-sm text-gray-600">
-                  I accept the Terms and Conditions
-                </label>
-              </div>
-
-              <div className="flex gap-4 mt-6 flex-wrap">
-                <Button 
-                  variant="secondary"
-                  onClick={clearSignature}
-                >
-                  Clear
-                </Button>
-                <Button 
-                  variant="primary"
-                  onClick={saveSignatureImage}
-                  disabled={!hasSignature}
-                >
-                  Save Signature
-                </Button>
-                <Button 
-                  variant="secondary"
-                  onClick={showDocumentPreview}
-                  disabled={!formData.signature}
-                >
-                  Preview Document
-                </Button>
-              </div>
-            </div>
+          <div className="flex gap-4 mt-6 flex-wrap">
+            <Button 
+              variant="secondary"
+              onClick={() => {
+                try {
+                  signature.clearSignature();
+                  setFormData(prev => ({...prev, signature: null}));
+                } catch (error) {
+                  console.error('Error clearing signature:', error);
+                }
+              }}
+            >
+              Clear
+            </Button>
+            <Button 
+              variant="primary"
+              onClick={() => {
+                try {
+                  signature.saveSignature();
+                } catch (error) {
+                  console.error('Error saving signature:', error);
+                  alert('There was an error saving your signature. Please try again.');
+                }
+              }}
+              disabled={!signature.hasSignature}
+            >
+              Save Signature
+            </Button>
+            <Button 
+              variant="secondary"
+              onClick={showDocumentPreview}
+              disabled={!signature.hasSignature && !formData.signature}
+            >
+              Preview Document
+            </Button>
           </div>
+          
+          {formData.signature && (
+            <p className="text-sm text-green-600 mt-2 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              Signature saved successfully
+            </p>
+          )}
         </div>
+        
+        {(!signature.hasSignature && !formData.signature) && (
+          <p className="text-sm text-red-500 mt-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            A signature is required to continue
+          </p>
+        )}
+        
+        {!termsAccepted && (
+          <p className="text-sm text-red-500 mt-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            You must accept the Terms and Conditions to continue
+          </p>
+        )}
       </div>
-
-      <div className="flex justify-between mt-8">
-        <Button
-          variant="secondary"
-          onClick={prevStep}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="primary"
-          onClick={nextStep}
-          disabled={!formData.signature || !termsAccepted}
-        >
-          Next
-        </Button>
-      </div>
-    </div>
+    </StepLayout>
   );
 
-  // Step 4: Document Upload
+  // Step 4: Document Upload - First Step (Social Security Card and ID Photos)
   const renderDocumentUploadStep = () => (
-    <div className="bg-[#e8f8ee] rounded-3xl p-6 md:p-10 shadow-sm">
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Left Column */}
-        <div className="flex flex-col items-center justify-center">
-          <div className="w-64 h-64 mb-4">
+    <StepLayout
+      title="Upload these first three files"
+      subtitle="All fields marked with * are required"
+      onNext={nextStep}
+      onPrev={prevStep}
+      nextDisabled={!formData.documents.socialSecurity || !formData.documents.licensePhotosFront || !formData.documents.licensePhotosBack}
+    >
+      <div className="bg-white rounded-lg p-4">
+        <div className="space-y-6">
+          <FileUploadField
+            id="socialSecurityUpload"
+            label="Social Security Card"
+            value={formData.documents.socialSecurity}
+            onChange={(file) => {
+              if (file && file.size > 10 * 1024 * 1024) {
+                alert("File is too large. Maximum size is 10MB.");
+                return;
+              }
+              handleFileChange('documents.socialSecurity', file);
+            }}
+            required={true}
+          />
+          
+          <FileUploadField
+            id="licensePhotosFrontUpload"
+            label="Photo ID (Expired or about to expire) - Frontal"
+            value={formData.documents.licensePhotosFront}
+            onChange={(file) => {
+              if (file && file.size > 10 * 1024 * 1024) {
+                alert("File is too large. Maximum size is 10MB.");
+                return;
+              }
+              handleFileChange('documents.licensePhotosFront', file);
+            }}
+            required={true}
+          />
+          
+          <FileUploadField
+            id="licensePhotosBackUpload"
+            label="Photo ID (Expired or about to expire) - Later"
+            value={formData.documents.licensePhotosBack}
+            onChange={(file) => {
+              if (file && file.size > 10 * 1024 * 1024) {
+                alert("File is too large. Maximum size is 10MB.");
+                return;
+              }
+              handleFileChange('documents.licensePhotosBack', file);
+            }}
+            required={true}
+          />
+        </div>
+        
+        {(!formData.documents.socialSecurity || !formData.documents.licensePhotosFront || !formData.documents.licensePhotosBack) && (
+          <p className="text-sm text-red-500 mt-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            All marked fields (*) are required to continue
+          </p>
+        )}
+      </div>
+    </StepLayout>
+  );
+
+  // Step 5: Document Upload - Second Step (Electricity Bill and Birth Certificate)
+  const renderDocumentUploadStep2 = () => (
+    <StepLayout
+      title="Upload these two more files"
+      subtitle="You're almost done!"
+      onNext={handleSubmit}
+      onPrev={prevStep}
+      nextLabel="Finish"
+      nextDisabled={!formData.documents.proofOfAddress || !formData.documents.birthCertificate}
+    >
+      <div className="bg-white rounded-lg p-4">
+        <div className="space-y-6">
+          <FileUploadField
+            id="electricityBillUpload"
+            label="Electricity Bill"
+            value={formData.documents.proofOfAddress}
+            onChange={(file) => {
+              if (file && file.size > 10 * 1024 * 1024) {
+                alert("File is too large. Maximum size is 10MB.");
+                return;
+              }
+              handleFileChange('documents.proofOfAddress', file);
+            }}
+            required={true}
+          />
+          
+          <FileUploadField
+            id="birthCertificateUpload"
+            label="Birth certificate / Proof of Residence"
+            value={formData.documents.birthCertificate}
+            onChange={(file) => {
+              if (file && file.size > 10 * 1024 * 1024) {
+                alert("File is too large. Maximum size is 10MB.");
+                return;
+              }
+              handleFileChange('documents.birthCertificate', file);
+            }}
+            required={true}
+          />
+        </div>
+        
+        {(!formData.documents.proofOfAddress || !formData.documents.birthCertificate) && (
+          <p className="text-sm text-red-500 mt-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            All marked fields (*) are required to continue
+          </p>
+        )}
+      </div>
+    </StepLayout>
+  );
+
+  // Step 6: Success screen
+  const renderSuccessStep = () => {
+    // Get user data for personalized message
+    let userName = 'Juan Pablo';
+    try {
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      if (userData && userData.item) {
+        const userItem = userData.item;
+        const firstName = userItem.cl_nombre || '';
+        
+        if (firstName) {
+          userName = firstName;
+        }
+      }
+    } catch (error) {
+      console.error('Error parsing user data for success screen:', error);
+    }
+    
+    return (
+      <div className="bg-[#e8f8ee] rounded-3xl p-6 md:p-10 shadow-sm">
+        <div className="flex flex-col items-center justify-center py-10">
+          <div className="w-64 h-64 mb-8">
             <DotLottiePlayer
               src="/json/chicolentes.json"
               autoplay={true}
               loop={true}
             />
           </div>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-[#147A31]">Upload your</h2>
-            <h2 className="text-2xl font-bold text-[#6949FF]">documents</h2>
-            <p className="text-lg text-gray-600 mt-2">The final step in your application</p>
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg p-4">
-            <h3 className="font-medium text-[#147A31] mb-4">Required Documents</h3>
-            
-            <div className="space-y-4">
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between items-center">
-                  <p className="text-gray-700">Social Security Card</p>
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    className="hidden"
-                    id="socialSecurityUpload"
-                    onChange={(e) => handleFileChange('documents.socialSecurity', e.target.files[0])}
-                  />
-                  <label htmlFor="socialSecurityUpload">
-                    <Button
-                      variant="secondary"
-                      as="span"
-                      size="sm"
-                    >
-                      {formData.documents.socialSecurity ? 'Change' : 'Upload'}
-                    </Button>
-                  </label>
-                </div>
-                {formData.documents.socialSecurity && (
-                  <p className="text-sm text-green-600 mt-1">✓ Uploaded</p>
-                )}
-              </div>
-              
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between items-center">
-                  <p className="text-gray-700">Birth Certificate</p>
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    className="hidden"
-                    id="birthCertificateUpload"
-                    onChange={(e) => handleFileChange('documents.birthCertificate', e.target.files[0])}
-                  />
-                  <label htmlFor="birthCertificateUpload">
-                    <Button
-                      variant="secondary"
-                      as="span"
-                      size="sm"
-                    >
-                      {formData.documents.birthCertificate ? 'Change' : 'Upload'}
-                    </Button>
-                  </label>
-                </div>
-                {formData.documents.birthCertificate && (
-                  <p className="text-sm text-green-600 mt-1">✓ Uploaded</p>
-                )}
-              </div>
-
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between items-center">
-                  <p className="text-gray-700">Proof of Address</p>
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    className="hidden"
-                    id="proofOfAddressUpload"
-                    onChange={(e) => handleFileChange('documents.proofOfAddress', e.target.files[0])}
-                  />
-                  <label htmlFor="proofOfAddressUpload">
-                    <Button
-                      variant="secondary"
-                      as="span"
-                      size="sm"
-                    >
-                      {formData.documents.proofOfAddress ? 'Change' : 'Upload'}
-                    </Button>
-                  </label>
-                </div>
-                {formData.documents.proofOfAddress && (
-                  <p className="text-sm text-green-600 mt-1">✓ Uploaded</p>
-                )}
-              </div>
-            </div>
-          </div>
+          
+          <h2 className="text-4xl font-bold mb-6 text-[#147A31]">¡Felicitaciones {userName}!</h2>
+          
+          <p className="text-xl text-gray-700 text-center max-w-xl mb-6">
+            Tu trámite ha concluido. Nos pondremos en contacto contigo
+            luego de evaluar tu caso.
+          </p>
+          
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className="bg-[#147A31] text-white hover:bg-[#0f5f26] font-semibold py-3 px-8 rounded-full shadow-sm transition duration-200 text-center w-48"
+          >
+            Exit
+          </button>
         </div>
       </div>
+    );
+  };
 
-      <div className="flex justify-between mt-8">
-        <Button
-          variant="secondary"
-          onClick={prevStep}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="primary"
-          onClick={() => navigate('/dashboard')}
-        >
-          Finish
-        </Button>
-      </div>
-    </div>
-  );
+  // Handle final submission
+  const handleSubmit = () => {
+    try {
+      console.log("All documents uploaded:", formData);
+      
+      // Validate all required documents are present
+      const requiredDocs = [
+        { name: 'Social Security Card', value: formData.documents.socialSecurity },
+        { name: 'Photo ID - Front', value: formData.documents.licensePhotosFront },
+        { name: 'Photo ID - Back', value: formData.documents.licensePhotosBack },
+        { name: 'Electricity Bill', value: formData.documents.proofOfAddress },
+        { name: 'Birth Certificate', value: formData.documents.birthCertificate },
+        { name: 'Selfie', value: formData.selfie },
+        { name: 'Signature', value: formData.signature }
+      ];
+      
+      const missingDocs = requiredDocs.filter(doc => !doc.value).map(doc => doc.name);
+      
+      if (missingDocs.length > 0) {
+        alert(`The following documents are missing: ${missingDocs.join(', ')}`);
+        return;
+      }
+      
+      // Here you would typically send the data to the server
+      // For now we'll just move to the success screen
+      setStep(6);
+      window.scrollTo(0, 0);
+    } catch (error) {
+      console.error('Error submitting documents:', error);
+      alert('There was an error completing your submission. Please try again.');
+    }
+  };
 
   // Render the appropriate step based on current state
   const renderStep = () => {
     switch (step) {
-      case 1:
-        return renderInstructionsStep();
-      case 2:
-        return renderSelfieStep();
-      case 3:
-        return renderSignatureStep();
-      case 4:
-        return renderDocumentUploadStep();
-      default:
-        return null;
+      case 1: return renderInstructionsStep();
+      case 2: return renderSelfieStep();
+      case 3: return renderSignatureStep();
+      case 4: return renderDocumentUploadStep();
+      case 5: return renderDocumentUploadStep2();
+      case 6: return renderSuccessStep();
+      default: return null;
     }
   };
 
@@ -917,7 +828,6 @@ const LicenseRenewalUpload = () => {
             </div>
             
             <div className="flex-1 p-0 bg-white">
-              {/* PDF Viewer using browser's built-in PDF viewer with iframe for better display */}
               <iframe
                 src={pdfPreviewUrl}
                 title="PDF Preview"
@@ -939,17 +849,12 @@ const LicenseRenewalUpload = () => {
             </div>
             
             <div className="p-4 border-t flex justify-end space-x-3">
-              <Button
-                variant="secondary"
-                onClick={closePreview}
-              >
-                Close
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  closePreview();
-                  nextStep();
+              <Button variant="secondary" onClick={closePreview}>Close</Button>
+              <Button 
+                variant="primary" 
+                onClick={() => { 
+                  closePreview(); 
+                  nextStep(); 
                 }}
               >
                 Continue
