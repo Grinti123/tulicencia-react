@@ -1,20 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card, Container, DotLottiePlayer, RadioGroup, FadeIn, LinkButton } from './ui';
 import useProcedures from '../hooks/useProcedures';
+import useLogin from '../hooks/useLogin';
 
 /**
  * Service Selection component with interactive selection options
  * Uses reusable UI components and fetches procedures
  */
 const ServiceSelection = () => {
+  const navigate = useNavigate();
   const [activeService, setActiveService] = useState(null);
   const [selectedPersonalOption, setSelectedPersonalOption] = useState('');
   const [selectedVehicleOption, setSelectedVehicleOption] = useState('');
   
-  // Use the custom hook to fetch procedures
+  // Use the custom hooks
   const { isLoading, error, groupProceduresByType } = useProcedures();
+  const { checkAuth } = useLogin();
   const { licenseOptions, vehicleOptions } = groupProceduresByType();
+
+  // Function to check auth status and redirect accordingly
+  const handleProcedureSelect = (e) => {
+    e.preventDefault();
+    
+    // Check if user is authenticated
+    const isAuthenticated = checkAuth();
+    
+    if (isAuthenticated) {
+      // If authenticated, redirect to new procedure page
+      navigate('/dashboard/new-procedure');
+    } else {
+      // If not authenticated, redirect to login page
+      navigate('/login');
+    }
+  };
 
   // Get path based on selected value
   const getPersonalProcedurePath = () => {
@@ -99,14 +118,14 @@ const ServiceSelection = () => {
                 Gestionamos tus trámites desde la solicitud hasta la entrega de documentos.
               </p>
 
-              <LinkButton
-                to={getPersonalProcedurePath()}
+              <Button
+                onClick={handleProcedureSelect}
                 variant="primary"
                 size="md"
                 disabled={!selectedPersonalOption}
               >
                 ¡Iniciar ahora!
-              </LinkButton>
+              </Button>
             </Card>
 
             {/* RadioGroup Options Column */}
@@ -156,14 +175,14 @@ const ServiceSelection = () => {
                 Gestionamos tus trámites vehiculares con rapidez y eficiencia.
               </p>
 
-              <LinkButton
-                to={getVehicleProcedurePath()}
+              <Button
+                onClick={handleProcedureSelect}
                 variant="primary"
                 size="md"
                 disabled={!selectedVehicleOption}
               >
                 ¡Iniciar ahora!
-              </LinkButton>
+              </Button>
             </Card>
 
             {/* RadioGroup Options Column */}
