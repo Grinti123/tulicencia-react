@@ -19,7 +19,7 @@ const Features = () => {
   }, []);
 
   return (
-    <section className="py-12 px-4 md:py-16 md:px-6 max-w-7xl mx-auto pb-30 lg:pb-0">
+    <section className="py-12 px-4 md:py-16 md:px-6 content-container pb-30 lg:pb-0">
       <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
         <div className="order-1 md:order-1 flex justify-center">
           <dotlottie-player
@@ -33,13 +33,13 @@ const Features = () => {
           ></dotlottie-player>
         </div>
 
-        <div className="order-2 md:order-2 text-center md:text-left">
-          <h2 className="text-[28px] leading-tight md:text-4xl font-bold mb-4 text-[#1a602d]">
+        <div className="order-2 md:order-2 text-center md:text-left fade-in">
+          <h2 className="text-[28px] leading-tight md:text-4xl font-bold mb-4 text-text-primary">
             <span className="block md:inline">Acercamos el gobierno</span>
             <span className="block md:inline">a los ciudadanos</span>
           </h2>
 
-          <p className="text-[#224a33] text-[16px] leading-relaxed md:text-[20px]">
+          <p className="text-text-dark text-[16px] leading-relaxed md:text-[20px]">
             No más días perdidos en largas filas ni tener que regresar porque olvidaste un documento. 
             Gestionamos tus trámites desde la solicitud hasta la entrega de licencias y permisos, 
             te ayudamos con las deudas o gravámenes y hasta negociamos planes de pago. 

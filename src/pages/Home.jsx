@@ -15,12 +15,12 @@ import Footer from '../components/Footer'
  */
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background-light">
       <Header />
       <main>
         {/* Hero section - using bg prop from Section */}
         <Section 
-          bg="white" 
+          bg="background-white" 
           className="bg-gradient-to-b from-[#ffffff] to-[#60f88b] rounded-b-[50px] pt-6 md:pt-20 pb-12 md:pb-50"
           containerSize="xl"
           withContainer={true}
@@ -29,7 +29,7 @@ const Home = () => {
         </Section>
         
         {/* Features section */}
-        <Section bg="white" containerSize="xl">
+        <Section bg="background-white" containerSize="xl">
           <Features />
         </Section>
         
@@ -37,12 +37,12 @@ const Home = () => {
         <HowItWorks />
         
         {/* Service Selection section */}
-        <Section bg="white" containerSize="lg">
+        <Section bg="background-white" containerSize="lg">
           <ServiceSelection />
         </Section>
         
         {/* FAQ section */}
-        <Section bg="white" containerSize="full">
+        <Section bg="background-white" containerSize="full">
           <FAQ />
         </Section>
         

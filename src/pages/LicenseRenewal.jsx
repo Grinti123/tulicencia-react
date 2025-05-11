@@ -9,20 +9,20 @@ const LicenseRenewal = () => {
     <div className="min-h-screen flex flex-col">
       <HeaderProcedure />
       
-      <main className="flex-grow py-8 md:py-12 bg-[#f5faee]">
-        <div className="max-w-6xl mx-auto px-4 md:px-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-center text-[#157a3c] mb-10">License Renewal</h1>
+      <main className="flex-grow py-8 md:py-12 bg-primary-lighter">
+        <div className="content-container">
+          <h1 className="text-2xl md:text-3xl font-bold text-center text-primary mb-10">License Renewal</h1>
           
-          <div className="bg-[#e8f8ee] p-6 md:p-10 rounded-2xl shadow-sm">
+          <div className="card card-primary p-6 md:p-10">
             <div className="grid md:grid-cols-2 gap-6 md:gap-10">
               {/* Requirements Section */}
               <div>
-                <div className="bg-[#157a3c] text-white p-4 rounded-t-lg flex items-center">
+                <div className="bg-primary text-white p-4 rounded-t-lg flex items-center">
                   <div className="flex-shrink-0 mr-4">
                     <img 
                       src="/img/avatar.jpg" 
                       alt="Requirements" 
-                      className="w-12 h-12 rounded-full"
+                      className="w-12 h-12 rounded-circle"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = "https://via.placeholder.com/48?text=👤";
@@ -83,12 +83,12 @@ const LicenseRenewal = () => {
               
               {/* Forms Section */}
               <div className="flex flex-col">
-                <div className="bg-[#157a3c] text-white p-4 rounded-t-lg flex items-center">
+                <div className="bg-primary text-white p-4 rounded-t-lg flex items-center">
                   <div className="flex-shrink-0 mr-4">
                     <img 
                       src="/img/avatar.jpg" 
                       alt="Forms" 
-                      className="w-12 h-12 rounded-full"
+                      className="w-12 h-12 rounded-circle"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = "https://via.placeholder.com/48?text=📝";
@@ -114,20 +114,20 @@ const LicenseRenewal = () => {
                       <span className="font-semibold">3.</span> If the utility or bank bills are not in your name, you 
                       must authorize it through Form DTOP-DIS-156 Primary 
                       Residence Certification and include a copy of the ID of 
-                      the property owner. <a href="/forms/DTOP-DIS-156.pdf" className="text-[#157a3c] hover:text-[#1a602d] hover:underline cursor-pointer" download>(Click to download)</a>
+                      the property owner. <a href="/forms/DTOP-DIS-156.pdf" className="text-primary hover:text-text-primary hover:underline cursor-pointer" download>(Click to download)</a>
                     </p>
                   </div>
                   
                   {/* Price section */}
                   <div className="mt-8 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold text-[#157a3c] mb-6">Price: $1</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">Price: $1</h2>
                     
                     <div className="flex flex-col md:flex-row gap-4 justify-center">
-                      <Link to="/procedures/license-renewal/form" className="bg-[#157a3c] hover:bg-[#1a602d] text-white font-semibold py-3 px-8 rounded-full shadow-sm transition duration-200 text-center w-full md:w-auto">
+                      <Link to="/procedures/license-renewal/form" className="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-full shadow-button transition duration-200 text-center w-full md:w-auto">
                         Start now
                       </Link>
                       
-                      <Link to="/" className="bg-white hover:bg-gray-100 text-[#157a3c] font-semibold py-3 px-8 rounded-full border border-[#157a3c] shadow-sm transition duration-200 text-center w-full md:w-auto">
+                      <Link to="/" className="inline-block bg-white hover:bg-gray-100 text-primary font-semibold py-3 px-8 rounded-full border border-primary shadow-sm transition duration-200 text-center w-full md:w-auto">
                         Go back
                       </Link>
                     </div>

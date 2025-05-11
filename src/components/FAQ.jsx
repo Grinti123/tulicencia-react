@@ -82,9 +82,9 @@ const FAQ = () => {
   };
 
   return (
-    <>
+    <div className="fade-in">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-green-700">Preguntas frecuentes</h2>
+        <h2 className="text-3xl font-bold text-primary">Preguntas frecuentes</h2>
       </div>
 
       <Tabs 
@@ -94,7 +94,7 @@ const FAQ = () => {
         tabsClassName="mt-[30px] px-[16px] pb-8"
         contentClassName="flex flex-wrap justify-center w-full mb-8"
       />
-    </>
+    </div>
   );
 };
 

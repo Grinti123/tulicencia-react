@@ -79,22 +79,22 @@ const ExamplePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background-light">
       <Header />
       <main>
         {/* Hero Section with FadeIn and LinkButton */}
         <Section 
-          bg="white" 
+          bg="background-white" 
           className="bg-gradient-to-b from-[#ffffff] to-[#60f88b] rounded-b-[50px] pt-6 md:pt-20 pb-12 md:pb-50"
           containerSize="xl"
         >
           <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
             <FadeIn className="order-2 md:order-1 text-center md:text-left" duration="1s">
-              <h1 className="text-4xl leading-tight md:text-5xl font-bold mb-4 md:mb-6 text-[#1a602d]">
+              <h1 className="text-4xl leading-tight md:text-5xl font-bold mb-4 md:mb-6 text-text-primary">
                 Example Page with Reusable Components
               </h1>
 
-              <p className="text-[#224a33] text-lg mb-6 md:mb-8">
+              <p className="text-text-dark text-lg mb-6 md:mb-8">
                 This page demonstrates all the reusable UI components you've created.
                 Use this as a reference for implementing new pages.
               </p>
@@ -131,8 +131,8 @@ const ExamplePage = () => {
         </Section>
         
         {/* Cards Section */}
-        <Section bg="white" containerSize="lg">
-          <h2 className="text-3xl font-bold text-center mb-8 text-[#1a602d]">Card Components</h2>
+        <Section bg="background-white" containerSize="lg">
+          <h2 className="text-3xl font-bold text-center mb-8 text-text-primary">Card Components</h2>
           
           <div className="grid md:grid-cols-3 gap-6">
             <FadeIn duration="0.8s">

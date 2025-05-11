@@ -1,0 +1,236 @@
+/* Custom styles for Tu Licencia */
+
+/* Button base styles */
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    transition-property: color, background-color, border-color;
+    transition-duration: 300ms;
+    border-radius: 9999px;
+    outline: none;
+}
+
+/* Button variants */
+.btn-primary {
+    background-color: #147A31;
+    color: white;
+    border: 2px solid #147A31;
+}
+
+.btn-primary:hover {
+    background-color: #0e6631;
+    border-color: #0e6631;
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #147A31;
+    border: 2px solid #147A31;
+}
+
+.btn-secondary:hover {
+    background-color: #147A31;
+    color: white;
+}
+
+.btn-text {
+    color: #147A31;
+    border: 2px solid transparent;
+}
+
+.btn-text:hover {
+    color: #0e6631;
+}
+
+/* Button sizes */
+.btn-sm {
+    font-size: 0.75rem; /* text-xs */
+    padding: 0.5rem 0.75rem; /* py-2 px-3 */
+}
+
+.btn-md {
+    font-size: 0.875rem; /* text-sm */
+    padding: 0.5rem 1.5rem; /* py-2 px-6 */
+}
+
+.btn-lg {
+    font-size: 1rem; /* text-base */
+    padding: 0.75rem 2rem; /* py-3 px-8 */
+}
+
+/* Button width */
+.btn-full {
+    width: 100%;
+}
+
+.btn-fit {
+    width: fit-content;
+}
+
+/* Link button specific styles */
+.link-btn {
+    text-align: center;
+    text-decoration: none;
+}
+
+/* Form field styles */
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    transition: all 300ms ease;
+}
+
+.form-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(21, 122, 60, 0.3);
+    border-color: #147A31;
+}
+
+.form-input:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+.form-error {
+    border-color: #ef4444;
+}
+
+/* Card styles */
+.card {
+    border-radius: 20px;
+    padding: 1.5rem;
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card-primary {
+    background-color: #e9f2e7;
+}
+
+/* Animation classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes slideIn {
+    0% { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Hero section styles */
+.hero-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-animation {
+    position: relative;
+    z-index: 10;
+}
+
+.hero-animation .lottie-animation {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.hero-text h1 {
+    color: #1a602d;
+    font-weight: 700;
+}
+
+.hero-text p {
+    color: #224a33;
+}
+
+/* Custom container sizes */
+.content-container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+    .content-container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+/* Custom utility classes */
+.text-primary-gradient {
+    background: linear-gradient(90deg, #147A31 0%, #2a8951 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+/* Custom form elements */
+.custom-checkbox {
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+}
+
+.custom-checkbox:hover input ~ .checkmark {
+    border-color: #147A31;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+    background-color: #147A31;
+    border-color: #147A31;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.custom-checkbox .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+} 

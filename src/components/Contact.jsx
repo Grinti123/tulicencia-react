@@ -52,8 +52,8 @@ const Contact = () => {
   }, []);
 
   return (
-    <section className="py-8 px-4 md:px-8 lg:px-20 relative bg-white">
-      <div className="w-full max-w-[100%] mx-auto bg-[#147A31] rounded-[50px] overflow-hidden shadow-md relative min-h-[400px]">
+    <section className="py-8 px-4 md:px-8 lg:px-20 relative bg-background-white">
+      <div className="w-full max-w-[100%] mx-auto bg-[#147A31] rounded-[50px] overflow-hidden shadow-card relative min-h-[400px]">
         <div className="flex flex-col md:flex-row items-center justify-between p-8 md:p-12">
           <div className="text-white mb-4 md:mb-0 md:w-1/2 md:pr-12 text-center md:text-left relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
