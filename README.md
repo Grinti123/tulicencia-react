@@ -29,7 +29,7 @@ src/
 └── App.jsx           # Main application entry
 ```
 
-### PHP Version (Converted)
+### PHP Version
 
 The PHP version maintains feature parity with the React version while using traditional server-side rendering:
 
