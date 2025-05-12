@@ -224,7 +224,7 @@ function renderInputForm($id, $name, $label, $type, $value, $placeholder = '', $
             </button>
         </div>
     </form>
-</div>
+</div> 
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

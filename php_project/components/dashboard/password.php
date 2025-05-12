@@ -85,8 +85,8 @@ function renderPasswordInput($id, $name, $label, $value, $placeholder) {
 
         <button type="submit" 
                 class="w-full px-6 py-2 bg-[#1a602d] text-white rounded-full hover:bg-[#144823] transition-colors">
-            Update Password
-        </button>
+                Update Password
+            </button>
     </form>
 </div>
 
