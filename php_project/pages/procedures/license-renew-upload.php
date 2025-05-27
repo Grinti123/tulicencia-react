@@ -156,7 +156,12 @@ include_once 'components/header_procedure.php';
                         <div class="grid md:grid-cols-2 gap-8">
                             <!-- Left Column -->
                             <div class="flex flex-col justify-center items-center">
-                                <img src="/images/chico-laptop.png" alt="Person with laptop" class="w-40 h-40 mb-4">
+                            <dotlottie-player
+                                    src="/json/chicolentes.json"
+                                    autoplay
+                                    loop
+                                    style="width: 50%; height: 50%;"
+                                ></dotlottie-player>
                                 
                                 <h2 class="text-4xl font-bold text-[#157a3c] text-center">¡Primero tomaremos</h2>
                                 <h2 class="text-4xl font-bold text-[#157a3c] text-center mb-4">una Selfie!</h2>
@@ -372,22 +377,82 @@ include_once 'components/header_procedure.php';
                             <h2 class="text-2xl font-bold text-[#147A31] mb-6">Upload these first three files</h2>
 
                             <div class="space-y-6">
-                                <div class="bg-white rounded-lg p-4">
-                                    <label class="block text-gray-700 font-medium mb-2">Social Security Card</label>
-                                    <input type="file" name="documents_socialSecurity" accept="image/*,.pdf" 
-                                           class="w-full p-2 border border-gray-300 rounded-lg">
+                                <!-- Social Security Card -->
+                                <div class="p-4 bg-white rounded-lg shadow-sm">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#157a3c]" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                            </svg>
+                                            <label for="documents_socialSecurity" class="text-gray-700 font-medium">Social Security Card</label>
+                                        </div>
+                                        <span class="text-sm text-gray-500">Required</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex-1">
+                                            <input type="file" id="documents_socialSecurity" name="documents_socialSecurity" class="hidden" accept="image/*,.pdf">
+                                            <button type="button" onclick="document.getElementById('documents_socialSecurity').click();" 
+                                                    class="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 flex items-center justify-center transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                </svg>
+                                                <span id="socialSecurity_label">Select file</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="bg-white rounded-lg p-4">
-                                    <label class="block text-gray-700 font-medium mb-2">Photo ID (Expired or about to expire) - Frontal</label>
-                                    <input type="file" name="documents_licensePhotosFront" accept="image/*,.pdf" 
-                                           class="w-full p-2 border border-gray-300 rounded-lg">
+                                <!-- Photo ID Front -->
+                                <div class="p-4 bg-white rounded-lg shadow-sm">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#157a3c]" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                            </svg>
+                                            <label for="documents_licensePhotosFront" class="text-gray-700 font-medium">Photo ID (Expired or about to expire) - Front</label>
+                                        </div>
+                                        <span class="text-sm text-gray-500">Required</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex-1">
+                                            <input type="file" id="documents_licensePhotosFront" name="documents_licensePhotosFront" class="hidden" accept="image/*,.pdf">
+                                            <button type="button" onclick="document.getElementById('documents_licensePhotosFront').click();" 
+                                                    class="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 flex items-center justify-center transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                </svg>
+                                                <span id="licensePhotosFront_label">Select file</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="bg-white rounded-lg p-4">
-                                    <label class="block text-gray-700 font-medium mb-2">Photo ID (Expired or about to expire) - Later</label>
-                                    <input type="file" name="documents_licensePhotosBack" accept="image/*,.pdf" 
-                                           class="w-full p-2 border border-gray-300 rounded-lg">
+                                <!-- Photo ID Back -->
+                                <div class="p-4 bg-white rounded-lg shadow-sm">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#157a3c]" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                            </svg>
+                                            <label for="documents_licensePhotosBack" class="text-gray-700 font-medium">Photo ID (Expired or about to expire) - Back</label>
+                                        </div>
+                                        <span class="text-sm text-gray-500">Required</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex-1">
+                                            <input type="file" id="documents_licensePhotosBack" name="documents_licensePhotosBack" class="hidden" accept="image/*,.pdf">
+                                            <button type="button" onclick="document.getElementById('documents_licensePhotosBack').click();" 
+                                                    class="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 flex items-center justify-center transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                </svg>
+                                                <span id="licensePhotosBack_label">Select file</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -398,16 +463,56 @@ include_once 'components/header_procedure.php';
                             <h2 class="text-2xl font-bold text-[#147A31] mb-6">Upload these two more files</h2>
 
                             <div class="space-y-6">
-                                <div class="bg-white rounded-lg p-4">
-                                    <label class="block text-gray-700 font-medium mb-2">Electricity Bill</label>
-                                    <input type="file" name="documents_proofOfAddress" accept="image/*,.pdf" 
-                                           class="w-full p-2 border border-gray-300 rounded-lg">
+                                <!-- Electricity Bill -->
+                                <div class="p-4 bg-white rounded-lg shadow-sm">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#157a3c]" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M5 2a1 1 0 00-1 1v1h12V3a1 1 0 00-1-1H5zM4 6a1 1 0 001 1h10a1 1 0 001-1V5H4v1zm-1 3a1 1 0 011-1h12a1 1 0 011 1v1H3V9zm0 4a1 1 0 011-1h12a1 1 0 011 1v1H3v-1zm1 4a1 1 0 001 1h10a1 1 0 001-1v-1H4v1z" clip-rule="evenodd" />
+                                            </svg>
+                                            <label for="documents_proofOfAddress" class="text-gray-700 font-medium">Electricity Bill</label>
+                                        </div>
+                                        <span class="text-sm text-gray-500">Required</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex-1">
+                                            <input type="file" id="documents_proofOfAddress" name="documents_proofOfAddress" class="hidden" accept="image/*,.pdf">
+                                            <button type="button" onclick="document.getElementById('documents_proofOfAddress').click();" 
+                                                    class="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 flex items-center justify-center transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                </svg>
+                                                <span id="proofOfAddress_label">Select file</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="bg-white rounded-lg p-4">
-                                    <label class="block text-gray-700 font-medium mb-2">Birth certificate / Proof of Residence</label>
-                                    <input type="file" name="documents_birthCertificate" accept="image/*,.pdf" 
-                                           class="w-full p-2 border border-gray-300 rounded-lg">
+                                <!-- Birth Certificate / Proof of Residence -->
+                                <div class="p-4 bg-white rounded-lg shadow-sm">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#157a3c]" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                            </svg>
+                                            <label for="documents_birthCertificate" class="text-gray-700 font-medium">Birth certificate / Proof of Residence</label>
+                                        </div>
+                                        <span class="text-sm text-gray-500">Required</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex-1">
+                                            <input type="file" id="documents_birthCertificate" name="documents_birthCertificate" class="hidden" accept="image/*,.pdf">
+                                            <button type="button" onclick="document.getElementById('documents_birthCertificate').click();" 
+                                                    class="w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 flex items-center justify-center transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                </svg>
+                                                <span id="birthCertificate_label">Select file</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -593,4 +698,51 @@ include_once 'components/header_procedure.php';
                 reader.readAsDataURL(input.files[0]);
             }
         }
+        
+        // File upload label updates
+        document.addEventListener('DOMContentLoaded', function() {
+            // List of all file inputs
+            const fileInputs = [
+                'documents_socialSecurity',
+                'documents_licensePhotosFront',
+                'documents_licensePhotosBack',
+                'documents_proofOfAddress',
+                'documents_birthCertificate'
+            ];
+            
+            // Add change event listener to each file input
+            fileInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('change', function() {
+                        const label = document.getElementById(inputId.split('_')[1] + '_label');
+                        if (label) {
+                            if (this.files && this.files[0]) {
+                                // Show file name with extension
+                                const fileName = this.files[0].name;
+                                label.textContent = fileName.length > 20 ? fileName.substring(0, 17) + '...' : fileName;
+                                
+                                // Change parent button style to show selection
+                                const button = label.closest('button');
+                                if (button) {
+                                    button.classList.add('border-[#157a3c]');
+                                    button.classList.add('text-[#157a3c]');
+                                    button.classList.add('bg-[#e8f8ee]');
+                                }
+                            } else {
+                                label.textContent = 'Select file';
+                                
+                                // Reset button style
+                                const button = label.closest('button');
+                                if (button) {
+                                    button.classList.remove('border-[#157a3c]');
+                                    button.classList.remove('text-[#157a3c]');
+                                    button.classList.remove('bg-[#e8f8ee]');
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
     </script>
