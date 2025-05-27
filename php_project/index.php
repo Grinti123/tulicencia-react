@@ -44,16 +44,76 @@ switch ($page) {
         include_once 'pages/procedures.php';
         break;
     case 'license-renewal':
-        include_once 'pages/license-renewal.php';
+        include_once 'pages/procedures/license-renewal.php';
         break;
     case 'license-renewal-form':
-        include_once 'pages/license-renewal-form.php';
+        include_once 'pages/procedures/license-renew-form.php';
         break;
     case 'license-renewal-upload':
-        include_once 'pages/license-renewal-upload.php';
+        include_once 'pages/procedures/license-renew-upload.php';
+        break;
+    case 'record-choferil':
+        include_once 'pages/procedures/record-choferil.php';
+        break;
+    case 'record-choferil-signature':
+        include_once 'pages/procedures/record-choferil-signature.php';
+        break;
+    case 'record-choferil-success':
+        include_once 'pages/procedures/record-choferil-success.php';
+        break;
+    case 'duplicado-titulo':
+        include_once 'pages/procedures/duplicado-titulo.php';
+        break;
+    case 'duplicado-titulo-signature':
+        include_once 'pages/procedures/duplicado-titulo-signature.php';
+        break;
+    case 'duplicado-titulo-upload':
+        include_once 'pages/procedures/duplicado-titulo-upload.php';
+        break;
+    case 'duplicado-titulo-success':
+        include_once 'pages/procedures/duplicado-titulo-success.php';
+        break;
+    case 'duplicado-titulo-confirmacion':
+        include_once 'pages/procedures/duplicado-titulo-confirmacion.php';
+        break;
+    case 'tablillas-incapacidad':
+        include_once 'pages/procedures/tablillas-incapacidad.php';
+        break;
+    case 'tablillas-incapacidad-confirmacion':
+        include_once 'pages/procedures/tablillas-incapacidad-confirmacion.php';
+        break;
+    case 'tablillas-incapacidad-upload':
+        include_once 'pages/procedures/tablillas-incapacidad-upload.php';
+        break;
+    case 'tablillas-incapacidad-success':
+        include_once 'pages/procedures/tablillas-incapacidad-success.php';
+        break;
+    case 'licencia-reciprocidad':
+        include_once 'pages/procedures/licencia-reciprocidad.php';
+        break;
+    case 'licencia-reciprocidad-confirmacion':
+        include_once 'pages/procedures/licencia-reciprocidad-confirmacion.php';
+        break;
+    case 'licencia-reciprocidad-upload':
+        include_once 'pages/procedures/licencia-reciprocidad-upload.php';
+        break;
+    case 'licencia-reciprocidad-selfie':
+        include_once 'pages/procedures/licencia-reciprocidad-selfie.php';
+        break;
+    case 'licencia-reciprocidad-firma':
+        include_once 'pages/procedures/licencia-reciprocidad-firma.php';
+        break;
+    case 'licencia-reciprocidad-documentos':
+        include_once 'pages/procedures/licencia-reciprocidad-documentos.php';
+        break;
+    case 'licencia-reciprocidad-documentos-final':
+        include_once 'pages/procedures/licencia-reciprocidad-documentos-final.php';
+        break;
+    case 'licencia-reciprocidad-success':
+        include_once 'pages/procedures/licencia-reciprocidad-success.php';
         break;
     case 'vehicle-transfer':
-        include_once 'pages/vehicle-transfer.php';
+        include_once 'pages/procedures/vehicle-transfer.php';
         break;
     case 'how-it-works':
         include_once 'pages/how-it-works.php';

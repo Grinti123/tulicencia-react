@@ -1,5 +1,6 @@
 <?php
-session_start();
+// Don't start a new session as it's already started in header.php
+// session_start();
 
 // Initialize form data from session or set defaults
 $formData = $_SESSION['license_form_data'] ?? [
@@ -137,24 +138,11 @@ function renderRadioGroup($name, $options, $selectedValue, $className = '') {
 
 // Set the title for the header
 $title = "License Renewal";
-include_once '../components/header_procedure.php';
+include_once 'components/header_procedure.php';
 
 // Main container start
 ?>
-<!DOCTYPE html>
-<html lang="en" class="font-poppins">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Tu Licencia</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.js"></script>
-</head>
-<body class="font-poppins">
-<div class="min-h-screen flex flex-col bg-[#f7fdf9]">
+<div class="min-h-screen flex flex-col bg-gradient-to-b from-[#f7fdf9] to-white">
     <main class="flex-grow py-8">
         <div class="max-w-6xl mx-auto px-4">
             <div class="bg-[#e8f8ee] rounded-3xl p-6 md:p-10 shadow-sm">
@@ -612,12 +600,12 @@ include_once '../components/header_procedure.php';
                                     </p>
                                     
                                     <div class="flex flex-col items-center gap-4">
-                                        <a href="license-renew-upload.php"
+                                        <a href="index.php?page=license-renewal-upload"
                                            class="inline-block px-8 py-3 bg-[#157a3c] text-white rounded-full hover:bg-[#1a602d] transition-colors">
                                             Let's start
                                         </a>
                                         
-                                        <a href="/dashboard"
+                                        <a href="index.php?page=user-dashboard"
                                            class="text-[#157a3c] underline">
                                             I'm tired, I'd rather do it later
                                         </a>
@@ -657,5 +645,3 @@ include_once '../components/header_procedure.php';
 
 <!-- Include DotLottie Player -->
 <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
-</body>
-</html> 

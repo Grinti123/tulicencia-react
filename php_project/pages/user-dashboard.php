@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Check if user is logged in
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: /login.php');
+    header('Location: index.php?page=login');
     exit();
 }
 
@@ -52,7 +52,7 @@ $userName = getUserName($userData);
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Tu Licencia</title>
+    <title>Dashboard - Tu Licencia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -105,7 +105,7 @@ $userName = getUserName($userData);
 
                 <!-- Navigation Menu -->
                 <div class="flex flex-col space-y-2">
-                    <a href="user-dashboard.php?section=procedures" class="block">
+                    <a href="index.php?page=user-dashboard&section=procedures" class="block">
                         <button class="w-full py-2 lg:py-3 flex items-center justify-start px-3 lg:px-4 cursor-pointer text-sm lg:text-base rounded-full border border-[#1a602d] transition-colors <?php echo isActive('procedures'); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 mr-2 lg:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -114,7 +114,7 @@ $userName = getUserName($userData);
                         </button>
                     </a>
 
-                    <a href="user-dashboard.php?section=profile" class="block">
+                    <a href="index.php?page=user-dashboard&section=profile" class="block">
                         <button class="w-full py-2 lg:py-3 flex items-center justify-start px-3 lg:px-4 cursor-pointer text-sm lg:text-base rounded-full border border-[#1a602d] transition-colors <?php echo isActive('profile'); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 mr-2 lg:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -123,7 +123,7 @@ $userName = getUserName($userData);
                         </button>
                     </a>
 
-                    <a href="user-dashboard.php?section=password" class="block">
+                    <a href="index.php?page=user-dashboard&section=password" class="block">
                         <button class="w-full py-2 lg:py-3 flex items-center justify-start px-3 lg:px-4 cursor-pointer text-sm lg:text-base rounded-full border border-[#1a602d] transition-colors <?php echo isActive('password'); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 mr-2 lg:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -132,7 +132,7 @@ $userName = getUserName($userData);
                         </button>
                     </a>
 
-                    <a href="user-dashboard.php?section=new-procedure" class="block">
+                    <a href="index.php?page=user-dashboard&section=new-procedure" class="block">
                         <button class="w-full py-2 lg:py-3 flex items-center justify-start px-3 lg:px-4 cursor-pointer text-sm lg:text-base rounded-full border border-[#1a602d] transition-colors <?php echo isActive('new-procedure'); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 mr-2 lg:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -141,7 +141,7 @@ $userName = getUserName($userData);
                         </button>
                     </a>
 
-                    <a href="user-dashboard.php?section=payments" class="block">
+                    <a href="index.php?page=user-dashboard&section=payments" class="block">
                         <button class="w-full py-2 lg:py-3 flex items-center justify-start px-3 lg:px-4 cursor-pointer text-sm lg:text-base rounded-full border border-[#1a602d] transition-colors <?php echo isActive('payments'); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 mr-2 lg:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -150,7 +150,7 @@ $userName = getUserName($userData);
                         </button>
                     </a>
 
-                    <a href="../logout.php" class="block">
+                    <a href="index.php?page=logout" class="block">
                         <button class="w-full py-2 lg:py-3 flex items-center justify-start px-3 lg:px-4 cursor-pointer text-sm lg:text-base rounded-full border border-[#1a602d] transition-colors bg-white text-[#1a602d] hover:bg-[#e8f8ee]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 lg:h-6 lg:w-6 mr-2 lg:mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

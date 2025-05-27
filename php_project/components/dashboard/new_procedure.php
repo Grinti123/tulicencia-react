@@ -6,14 +6,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Define routes for each procedure based on the tr_id
 $procedureRoutes = [
-    1 => '/pages/license-renew-form.php',
-    2 => '/procedures/duplicate-license',
-    3 => '/procedures/reciprocity-license',
-    4 => '/procedures/vehicle-transfer',
-    5 => '/procedures/title-management',
-    6 => '/procedures/tablillas-incapacidad',
-    7 => '/procedures/liens',
-    8 => '/procedures/drivers-record'
+    1 => 'index.php?page=license-renewal-form',
+    2 => 'index.php?page=duplicate-license',
+    3 => 'index.php?page=licencia-reciprocidad',
+    4 => 'index.php?page=vehicle-transfer',
+    6 => 'index.php?page=tablillas-incapacidad',
+    9 => 'index.php?page=record-choferil',
+    10 => 'index.php?page=duplicado-titulo'
 ];
 
 // Check if form was submitted and prepare JavaScript redirect
@@ -44,15 +43,15 @@ $procedures = [
         'name' => 'Reciprocity License',
         'type' => 'license'
     ],
+    [
+        'tr_id' => 9,
+        'name' => 'Record Choferil',
+        'type' => 'license'
+    ],
     // Vehicle Procedures
     [
         'tr_id' => 4,
         'name' => 'Vehicle Transfer',
-        'type' => 'vehicle'
-    ],
-    [
-        'tr_id' => 5,
-        'name' => 'Title Management',
         'type' => 'vehicle'
     ],
     [
@@ -61,13 +60,8 @@ $procedures = [
         'type' => 'vehicle'
     ],
     [
-        'tr_id' => 7,
-        'name' => 'Liens',
-        'type' => 'vehicle'
-    ],
-    [
-        'tr_id' => 8,
-        'name' => 'Drivers Record',
+        'tr_id' => 10,
+        'name' => 'Duplicado de Título',
         'type' => 'vehicle'
     ]
 ];
@@ -88,7 +82,7 @@ echo $redirectScript;
 <div class="p-6 bg-gradient-to-br from-[#e8f8ee] via-white to-[#e8f8ee] rounded-lg shadow-lg w-full">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold text-[#157a3c]">Select a procedure</h2>
-        <a href="/procedures" class="inline-flex items-center px-4 py-2 border border-[#157a3c] text-[#157a3c] rounded-lg hover:bg-[#e8f8ee] transition-colors">
+        <a href="index.php?page=procedures" class="inline-flex items-center px-4 py-2 border border-[#157a3c] text-[#157a3c] rounded-lg hover:bg-[#e8f8ee] transition-colors">
             Browse All Procedures
         </a>
     </div>
@@ -100,7 +94,7 @@ echo $redirectScript;
                 <div class="flex items-center justify-center mb-4">
                     <div class="w-[170px] h-[170px]">
                         <dotlottie-player
-                            src="../../json/chicolentes.json"
+                            src="/json/chicolentes.json"
                             background="transparent"
                             speed="1"
                             class="w-full h-full"
@@ -133,7 +127,7 @@ echo $redirectScript;
                 <div class="flex items-center justify-center mb-4">
                     <div class="w-[170px] h-[170px]">
                         <dotlottie-player
-                            src="../../json/carrito.json"
+                            src="/json/carrito.json"
                             background="transparent"
                             speed="1"
                             class="w-full h-full"

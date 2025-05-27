@@ -126,6 +126,6 @@ $hasScrolledClass = isset($_COOKIE['has_scrolled']) && $_COOKIE['has_scrolled'] 
     </header>
 
     <!-- Spacer to prevent content from hiding behind fixed header -->
-    <div class="h-[60px] md:h-[72px]"></div>
+    <div class="h-[60px] md:h-[72px] bg-[#f7fdf9]"></div>
     
-    <main class="min-h-screen bg-background-light"> 
+    <main class="min-h-screen bg-gradient-to-b from-[#f7fdf9] to-white"> 

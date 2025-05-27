@@ -49,4 +49,4 @@ $dashboardLink = $dashboardLink ?? '/dashboard';
 </header>
 
 <!-- Spacer to prevent content from hiding behind fixed header -->
-<div class="h-[60px] md:h-[72px]"></div> 
+<div class="h-[60px] md:h-[72px] bg-[#f7fdf9]"></div> 
